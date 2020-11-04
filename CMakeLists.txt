@@ -93,7 +93,7 @@ serac_add_code_checks(PREFIX   serac
 #------------------------------------------------------------------------------
 add_library(serac INTERFACE)
 target_link_libraries(serac INTERFACE coefficients physics infrastructure numerics physics_utilities physics_operators integrators)
-install(TARGETS              serac
+install(TARGETS              serac mfem mpi
         EXPORT               serac-targets
         DESTINATION          lib
         )

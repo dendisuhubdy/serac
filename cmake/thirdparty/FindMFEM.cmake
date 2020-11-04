@@ -52,7 +52,7 @@ else()
         NO_SYSTEM_ENVIRONMENT_PATH
         NO_CMAKE_SYSTEM_PATH )
 
-
+    set(MFEM_LIB_NAME ${MFEM_LIBRARIES})
     # when MFEM is built w/o cmake, we can get the details
     # of deps from its config.mk file
     find_path(
@@ -125,8 +125,9 @@ endif()
 message(STATUS "MFEM Includes: ${MFEM_INCLUDE_DIRS}")
 message(STATUS "MFEM Libraries: ${MFEM_LIBRARIES}")
 
-blt_register_library(
-    NAME          mfem
-    INCLUDES      ${MFEM_INCLUDE_DIRS}
-    LIBRARIES     ${MFEM_LIBRARIES}
+blt_import_library(
+    NAME            mfem
+    LIBRARIES       ${MFEM_LIB_NAME}
+    INCLUDES        ${MFEM_INCLUDE_DIRS}
+    DEPENDS_ON      ${mfem_tpl_lnk_flags}
     TREAT_INCLUDES_AS_SYSTEM ON)
