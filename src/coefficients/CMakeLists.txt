@@ -19,7 +19,7 @@ blt_add_library(
     NAME        coefficients
     SOURCES     ${coefficients_sources}
     HEADERS     ${coefficients_headers}
-    DEPENDS_ON  axom mfem mpi
+    DEPENDS_ON  axom::axom mfem mpi
     )
 
 target_include_directories(coefficients PUBLIC 

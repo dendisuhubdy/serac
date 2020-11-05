@@ -19,7 +19,7 @@ set(physics_utilities_sources
     finite_element_state.cpp
     )
 
-set(physics_utilities_depends infrastructure mfem mpi axom)
+set(physics_utilities_depends infrastructure mfem mpi axom::axom)
 
 blt_add_library(
     NAME        physics_utilities
