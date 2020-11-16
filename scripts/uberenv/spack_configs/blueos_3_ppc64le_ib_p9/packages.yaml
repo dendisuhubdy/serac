@@ -70,6 +70,8 @@ packages:
     externals:
       - spec: spectrum-mpi@release%clang@upstream_gfortran
         prefix: /usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-upstream-2019.08.15
+      - spec: spectrum-mpi@release%clang@ibm_gfortran
+        prefix: /usr/tce/packages/spectrum-mpi/spectrum-mpi-rolling-release-clang-ibm-2019.10.03-gcc-8.3.1
 
   # System level packages to not build
   autoconf:
@@ -132,6 +134,12 @@ packages:
       - spec: doxygen@1.8.17
         prefix: /usr/WS2/smithdev/devtools/blueos_3_ppc64le_ib_p9/latest/doxygen-1.8.17
     buildable: false
+  llvm:
+    version: [10.0.0]
+    buildable: false
+    externals:
+    - spec: llvm+clang
+      prefix: /usr/tce/packages/clang/clang-10.0.0
   python:
     version: [3.8.2]
     externals:

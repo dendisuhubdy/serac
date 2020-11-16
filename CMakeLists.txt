@@ -43,6 +43,10 @@ endif()
 set(ENABLE_ASTYLE      OFF CACHE BOOL "")
 set(ENABLE_CLANGQUERY  OFF CACHE BOOL "")
 set(ENABLE_UNCRUSTIFY  OFF CACHE BOOL "")
+set(ENABLE_BENCHMARKS  OFF CACHE BOOL "")
+
+set(ENABLE_ALL_WARNINGS ON CACHE BOOL "")
+set(ENABLE_WARNINGS_AS_ERRORS ON CACHE BOOL "")
 
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
@@ -71,9 +75,30 @@ if(ENABLE_TESTS)
 endif()
 
 #------------------------------------------------------------------------------
+# Configure examples
+#------------------------------------------------------------------------------
+
+add_subdirectory(examples)
+
+#------------------------------------------------------------------------------
 # Add Code Checks
 #------------------------------------------------------------------------------
 
 serac_add_code_checks(PREFIX   serac
                       INCLUDES /src/ /tests/
                       EXCLUDES cmake/blt uberenv_libs)
+
+#------------------------------------------------------------------------------
+# Export Targets
+#------------------------------------------------------------------------------
+add_library(serac INTERFACE)
+target_link_libraries(serac INTERFACE coefficients physics infrastructure numerics physics_utilities physics_operators integrators)
+install(TARGETS              serac
+        EXPORT               serac-targets
+        DESTINATION          lib
+        )
+
+install(EXPORT serac-targets 
+        NAMESPACE serac::
+        DESTINATION lib/cmake
+        )

@@ -4,17 +4,16 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "inc_hyperelastic_integrator.hpp"
+#include "integrators/inc_hyperelastic_integrator.hpp"
 
-#include "common/profiling.hpp"
+#include "infrastructure/profiling.hpp"
 
 namespace serac {
 
 double IncrementalHyperelasticIntegrator::GetElementEnergy(const mfem::FiniteElement&   el,
                                                            mfem::ElementTransformation& Ttr, const mfem::Vector& elfun)
 {
-  int    dof = el.GetDof(), dim = el.GetDim();
-  double energy;
+  int dof = el.GetDof(), dim = el.GetDim();
 
   DSh_.SetSize(dof, dim);
   Jrt_.SetSize(dim);
@@ -27,7 +26,7 @@ double IncrementalHyperelasticIntegrator::GetElementEnergy(const mfem::FiniteEle
     ir = &(mfem::IntRules.Get(el.GetGeomType(), 2 * el.GetOrder() + 3));  // <---
   }
 
-  energy = 0.0;
+  double energy = 0.0;
   model_->SetTransformation(Ttr);
   for (int i = 0; i < ir->GetNPoints(); i++) {
     const mfem::IntegrationPoint& ip = ir->IntPoint(i);
