@@ -33,6 +33,9 @@ jobs:
   - script:  |
       ls
       pwd
+      which gfortran-8
+      which gfortran-9
+      which gfortran
       echo "./scripts/llnl/build_tpls.py --directory $(Build.Repository.LocalPath)/../serac_tpls --spec $(SPEC)"
       ./scripts/llnl/build_tpls.py --directory $(Build.Repository.LocalPath)/../serac_tpls --spec $(SPEC)
       ls 
