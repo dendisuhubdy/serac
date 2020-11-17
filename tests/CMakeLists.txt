@@ -10,7 +10,7 @@
 
 if (ENABLE_GTEST)
 
-    set(test_dependencies physics coefficients axom::axom mpi mfem gtest)
+    set(test_dependencies physics coefficients axom mpi mfem gtest)
 
     set(solver_tests
         serac_dynamic_solver.cpp
