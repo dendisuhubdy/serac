@@ -59,7 +59,7 @@ compilers:
     paths:
       cc: /usr/bin/clang
       cxx: /usr/bin/clang++
-      f77: /usr/bin/gfortran-9
-      fc: /usr/bin/gfortran-9
+      f77: /usr/local/bin/gfortran-9
+      fc: /usr/local/bin/gfortran-9
     spec: apple-clang@10.0.1
     target: x86_64
