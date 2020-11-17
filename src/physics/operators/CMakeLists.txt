@@ -14,7 +14,7 @@ set(physics_operators_sources
     thermal_operators.cpp
     )
 
-set(physics_operators_depends infrastructure physics_utilities numerics fmt mfem mpi axom)
+set(physics_operators_depends physics_utilities numerics)
 
 blt_add_library(
     NAME        physics_operators

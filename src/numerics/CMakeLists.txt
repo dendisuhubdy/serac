@@ -15,7 +15,7 @@ set(numerics_sources
     mesh_utils.cpp
     )
 
-set(numerics_depends infrastructure axom mfem mpi fmt)
+set(numerics_depends infrastructure)
 
 blt_add_library(
     NAME        numerics
