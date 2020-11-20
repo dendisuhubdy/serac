@@ -91,7 +91,8 @@ void ThermalConduction::completeSetup()
   // Add the domain diffusion integrator to the K form and assemble the matrix
   K_form_ = temperature_.createOnSpace<mfem::ParBilinearForm>();
   K_form_->AddDomainIntegrator(new mfem::DiffusionIntegrator(*kappa_));
-  K_form_->Assemble(0);  // keep sparsity pattern of M and K the same
+  //K_form_->Assemble(0);  // keep sparsity pattern of M and K the same
+  K_form_->Assemble();  // keep sparsity pattern of M and K the same
   K_form_->Finalize();
 
   // Add the body source to the RS if specified

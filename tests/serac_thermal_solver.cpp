@@ -14,6 +14,9 @@
 #include "physics/thermal_conduction.hpp"
 #include "serac_config.hpp"
 
+int argc_global;
+char** argv_global;
+
 namespace serac {
 
 double One(const mfem::Vector& /*x*/) { return 1.0; }
@@ -40,8 +43,13 @@ TEST(thermal_solver, static_solve)
 {
   MPI_Barrier(MPI_COMM_WORLD);
 
-  auto pmesh = buildBallMesh(10000);
+  //  auto pmesh = buildBallMesh(10000);
 
+  std::string mesh_file = std::string(SERAC_REPO_DIR) + "/data/meshes/star.mesh";
+
+  auto pmesh = buildMeshFromFile(mesh_file, 1, 1);
+
+  
   const IterativeSolverParameters linear_params = {.rel_tol     = 1.0e-6,
                                                    .abs_tol     = 1.0e-12,
                                                    .print_level = 0,
@@ -75,7 +83,7 @@ TEST(thermal_solver, static_solve)
   // Measure the L2 norm of the solution and check the value
   mfem::ConstantCoefficient zero(0.0);
   double                    u_norm = therm_solver.temperature().gridFunc().ComputeLpError(2.0, zero);
-  EXPECT_NEAR(2.02263, u_norm, 0.00001);
+  EXPECT_NEAR(2.180662, u_norm, 0.00001);
 
   MPI_Barrier(MPI_COMM_WORLD);
 }
@@ -301,6 +309,64 @@ TEST(thermal_solver, dyn_imp_solve)
   MPI_Barrier(MPI_COMM_WORLD);
 }
 
+#ifdef MFEM_USE_AMGX
+TEST(thermal_solver, static_solve_amgx)
+{
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  //  auto pmesh = buildBallMesh(10000);
+
+  std::string mesh_file = std::string(SERAC_REPO_DIR) + "/data/meshes/star.mesh";
+
+  auto pmesh = buildMeshFromFile(mesh_file, 1, 1);
+
+  
+  const IterativeSolverParameters linear_params = {.rel_tol     = 1.0e-12,
+                                                   .abs_tol     = 1.0e-12,
+                                                   .print_level = 1,
+                                                   .max_iter    = 2000,
+                                                   .lin_solver  = LinearSolver::CG,
+                                                   .prec        = AMGXPrec{}};
+
+  int order = 2;
+
+  if (argc_global > 1) {
+    std::cout << "args:" << argc_global << " " << argv_global[1] << std::endl;
+    order = atoi(argv_global[1]);
+  }
+  
+  // Initialize the second order thermal solver on the parallel mesh
+  ThermalConduction therm_solver(order, pmesh, linear_params);
+
+  // Initialize the temperature boundary condition
+  auto u_0 = std::make_shared<mfem::FunctionCoefficient>(One);
+
+  std::set<int> temp_bdr = {1};
+
+  // Set the temperature BC in the thermal solver
+  therm_solver.setTemperatureBCs(temp_bdr, u_0);
+
+  // Set the conductivity of the thermal operator
+  auto kappa = std::make_unique<mfem::ConstantCoefficient>(1.0);
+  therm_solver.setConductivity(std::move(kappa));
+
+  // Complete the setup without allocating the mass matrices and dynamic
+  // operator
+  therm_solver.completeSetup();
+
+  // Perform the static solve
+  double dt = 1.0;
+  therm_solver.advanceTimestep(dt);
+
+  // Measure the L2 norm of the solution and check the value
+  mfem::ConstantCoefficient zero(0.0);
+  double                    u_norm = therm_solver.temperature().gridFunc().ComputeLpError(2.0, zero);
+  EXPECT_NEAR(2.180662, u_norm, 0.00001);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+}
+#endif
+
 }  // namespace serac
 
 //------------------------------------------------------------------------------
@@ -318,6 +384,9 @@ int main(int argc, char* argv[])
   UnitTestLogger logger;  // create & initialize test logger, finalized when
                           // exiting main scope
 
+  argc_global = argc;
+  argv_global = argv;
+  
   result = RUN_ALL_TESTS();
 
   MPI_Finalize();
