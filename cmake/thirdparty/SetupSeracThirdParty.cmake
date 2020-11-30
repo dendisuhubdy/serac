@@ -68,24 +68,6 @@ find_package(axom REQUIRED
                   PATHS ${AXOM_DIR}/lib/cmake)
 
 #------------------------------------------------------------------------------
-# Lua
-#------------------------------------------------------------------------------
-if(NOT AXOM_LUA_DIR)
-  MESSAGE(FATAL_ERROR "Axom was not built with Lua.")
-endif()
-
-serac_assert_is_directory(VARIABLE_NAME AXOM_LUA_DIR)
-
-set(LUA_DIR ${AXOM_LUA_DIR})
-
-include(${CMAKE_CURRENT_LIST_DIR}/FindLUA.cmake)
-blt_import_library(
-    NAME          lua
-    INCLUDES      ${LUA_INCLUDE_DIR}
-    LIBRARIES     ${LUA_LIBRARY}
-    TREAT_INCLUDES_AS_SYSTEM ON)
-
-#------------------------------------------------------------------------------
 # Tribol
 #------------------------------------------------------------------------------
 if(TRIBOL_DIR)
@@ -181,5 +163,20 @@ foreach(_target axom)
                 set_target_properties( ${_target} PROPERTIES ${_prop} "${correct_flags}" )
             endif()
         endforeach()
+    endif()
+endforeach()
+
+#------------------------------------------------------------------------------
+# Targets that need to be exported but don't have a CMake config file
+#------------------------------------------------------------------------------
+set(TPL_DEPS cuda mfem mpi petsc)
+foreach(dep ${TPL_DEPS})
+    if(TARGET ${dep})
+        get_target_property(_is_imported ${dep} IMPORTED)
+        if(NOT ${_is_imported})
+            install(TARGETS              ${dep}
+                    EXPORT               serac-targets
+                    DESTINATION          lib)
+        endif()
     endif()
 endforeach()

@@ -48,6 +48,8 @@ set(ENABLE_BENCHMARKS  OFF CACHE BOOL "")
 set(ENABLE_ALL_WARNINGS ON CACHE BOOL "")
 set(ENABLE_WARNINGS_AS_ERRORS ON CACHE BOOL "")
 
+set(BLT_EXPORT_THIRDPARTY ON CACHE BOOL "")
+
 include(${BLT_SOURCE_DIR}/SetupBLT.cmake)
 
 #------------------------------------------------------------------------------

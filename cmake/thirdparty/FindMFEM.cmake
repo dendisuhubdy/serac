@@ -109,6 +109,15 @@ else()
     endif()
 
     list(APPEND MFEM_LIBRARIES ${mfem_tpl_lnk_flags})
+
+    # Only needed if MFEM was built with Make, otherwise there will already be an importable target
+    blt_import_library(
+        NAME            mfem
+        LIBRARIES       ${MFEM_LIB_NAME}
+        INCLUDES        ${MFEM_INCLUDE_DIRS}
+        DEPENDS_ON      ${mfem_tpl_lnk_flags}
+        TREAT_INCLUDES_AS_SYSTEM ON
+        EXPORTABLE      ON)
 endif()
 
 include(FindPackageHandleStandardArgs)
@@ -124,10 +133,3 @@ endif()
 
 message(STATUS "MFEM Includes: ${MFEM_INCLUDE_DIRS}")
 message(STATUS "MFEM Libraries: ${MFEM_LIBRARIES}")
-
-blt_import_library(
-    NAME            mfem
-    LIBRARIES       ${MFEM_LIB_NAME}
-    INCLUDES        ${MFEM_INCLUDE_DIRS}
-    DEPENDS_ON      ${mfem_tpl_lnk_flags}
-    TREAT_INCLUDES_AS_SYSTEM ON)
