@@ -17,8 +17,8 @@ constexpr int NUM_FIELDS = 2;
 
 NonlinearSolid::NonlinearSolid(int order, std::shared_ptr<mfem::ParMesh> mesh, const SolverParameters& params)
     : BasePhysics(mesh, NUM_FIELDS, order),
-      velocity_(*mesh, FEStateOptions{.order = order, .name = "velocity"}),
-      displacement_(*mesh, FEStateOptions{.order = order, .name = "displacement"})
+      velocity_(*mesh, FiniteElementState::Options{.order = order, .name = "velocity"}),
+      displacement_(*mesh, FiniteElementState::Options{.order = order, .name = "displacement"})
 {
   state_.push_back(velocity_);
   state_.push_back(displacement_);
@@ -36,7 +36,10 @@ NonlinearSolid::NonlinearSolid(int order, std::shared_ptr<mfem::ParMesh> mesh, c
   true_offset[0]             = 0;
   true_offset[1]             = true_size;
   true_offset[2]             = 2 * true_size;
-  block_                     = std::make_unique<mfem::BlockVector>(true_offset);
+
+  // This will be "host-std" without CUDA, which is "the usual" - operator new[]/delete[]
+  // If an accelerator is configured, then that gets used instead
+  block_ = std::make_unique<mfem::BlockVector>(true_offset, mfem::Device::GetDeviceMemoryType());
 
   block_->GetBlockView(1, displacement_.trueVec());
   displacement_.trueVec() = 0.0;
@@ -105,6 +108,11 @@ void NonlinearSolid::setVelocity(mfem::VectorCoefficient& velo_state)
   gf_initialized_[0] = true;
 }
 
+std::unique_ptr<mfem::Operator> NonlinearSolid::buildQuasistaticOperator(std::unique_ptr<mfem::ParNonlinearForm> H_form)
+{
+  return std::make_unique<NonlinearSolidQuasiStaticOperator>(std::move(H_form), bcs_);
+}
+
 void NonlinearSolid::completeSetup()
 {
   // Define the nonlinear form
@@ -158,7 +166,7 @@ void NonlinearSolid::completeSetup()
   // Set the MFEM abstract operators for use with the internal MFEM solvers
   if (timestepper_ == serac::TimestepMethod::QuasiStatic) {
     nonlin_solver_.nonlinearSolver().iterative_mode = true;
-    nonlinear_oper_ = std::make_unique<NonlinearSolidQuasiStaticOperator>(std::move(H_form), bcs_);
+    nonlinear_oper_                                 = buildQuasistaticOperator(std::move(H_form));
     nonlin_solver_.SetOperator(*nonlinear_oper_);
   } else {
     nonlin_solver_.nonlinearSolver().iterative_mode = false;
@@ -229,6 +237,9 @@ void NonlinearSolid::InputInfo::defineInputFileSchema(axom::inlet::Table& table)
 
   auto& solver_table = table.addTable("solver", "Linear and Nonlinear Solver Parameters.");
   serac::EquationSolver::defineInputFileSchema(solver_table);
+
+  auto& bc_table = table.addGenericArray("boundary_conds", "Boundary condition information");
+  serac::input::BoundaryConditionInputInfo::defineInputFileSchema(bc_table);
 }
 
 }  // namespace serac
@@ -252,6 +263,11 @@ NonlinearSolid::InputInfo FromInlet<NonlinearSolid::InputInfo>::operator()(const
   // neo-Hookean material parameters
   result.mu = base["mu"];
   result.K  = base["K"];
+
+  auto bdr_map = base["boundary_conds"].get<std::unordered_map<int, serac::input::BoundaryConditionInputInfo>>();
+  for (const auto& [idx, val] : bdr_map) {
+    result.boundary_conditions.push_back(val);
+  }
 
   return result;
 }

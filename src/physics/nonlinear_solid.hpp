@@ -64,6 +64,9 @@ public:
     // Lame parameters
     double mu;
     double K;
+
+    // Boundary condition information
+    std::vector<input::BoundaryConditionInputInfo> boundary_conditions;
   };
 
   /**
@@ -175,6 +178,16 @@ public:
 
 protected:
   /**
+   * @brief Extensible means of constructing the nonlinear quasistatic
+   * operator
+   *
+   * @param[in] H_form The nonlinear form
+   *
+   * @return An owning pointer to the operator
+   */
+  virtual std::unique_ptr<mfem::Operator> buildQuasistaticOperator(std::unique_ptr<mfem::ParNonlinearForm> H_form);
+
+  /**
    * @brief Velocity field
    */
   FiniteElementState velocity_;
@@ -222,7 +235,7 @@ protected:
   /**
    * @brief Solve the Quasi-static operator
    */
-  void quasiStaticSolve();
+  virtual void quasiStaticSolve();
 
   /**
    * @brief Nonlinear system solver instance

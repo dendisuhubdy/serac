@@ -52,7 +52,6 @@ else()
         NO_SYSTEM_ENVIRONMENT_PATH
         NO_CMAKE_SYSTEM_PATH )
 
-    set(MFEM_LIB_NAME ${MFEM_LIBRARIES})
     # when MFEM is built w/o cmake, we can get the details
     # of deps from its config.mk file
     find_path(
@@ -110,12 +109,21 @@ else()
 
     list(APPEND MFEM_LIBRARIES ${mfem_tpl_lnk_flags})
 
+    if(mfem_cfg_file_txt MATCHES "MFEM_USE_CUDA += YES")
+        if(NOT ENABLE_CUDA)
+            message(WARNING "MFEM was built with CUDA but CUDA is not enabled")
+        endif()
+        list(APPEND MFEM_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
+        list(APPEND MFEM_LIBRARIES ${CMAKE_CUDA_LINK_FLAGS})
+        list(APPEND MFEM_LIBRARIES ${CUDA_LIBRARIES})
+        list(APPEND MFEM_LIBRARIES ${CUDA_CUBLAS_LIBRARIES})
+    endif()
+
     # Only needed if MFEM was built with Make, otherwise there will already be an importable target
     blt_import_library(
         NAME            mfem
-        LIBRARIES       ${MFEM_LIB_NAME}
         INCLUDES        ${MFEM_INCLUDE_DIRS}
-        DEPENDS_ON      ${mfem_tpl_lnk_flags}
+        DEPENDS_ON      ${MFEM_LIBRARIES}
         TREAT_INCLUDES_AS_SYSTEM ON
         EXPORTABLE      ON)
 endif()
