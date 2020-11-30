@@ -47,7 +47,13 @@ set_property(TARGET conduit::conduit
              APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
              "${CONDUIT_INSTALL_PREFIX}/include/conduit/")
 
+#------------------------------------------------------------------------------
+# MFEM
+#------------------------------------------------------------------------------
+include(${CMAKE_CURRENT_LIST_DIR}/FindMFEM.cmake)
 
+blt_print_target_properties(TARGET mfem)
+blt_print_target_properties(TARGET mpi)
 #------------------------------------------------------------------------------
 # Axom
 #------------------------------------------------------------------------------
@@ -61,12 +67,23 @@ find_package(axom REQUIRED
                   NO_DEFAULT_PATH 
                   PATHS ${AXOM_DIR}/lib/cmake)
 
-
 #------------------------------------------------------------------------------
-# MFEM
+# Lua
 #------------------------------------------------------------------------------
-include(cmake/thirdparty/FindMFEM.cmake)
+if(NOT AXOM_LUA_DIR)
+  MESSAGE(FATAL_ERROR "Axom was not built with Lua.")
+endif()
 
+serac_assert_is_directory(VARIABLE_NAME AXOM_LUA_DIR)
+
+set(LUA_DIR ${AXOM_LUA_DIR})
+
+include(${CMAKE_CURRENT_LIST_DIR}/FindLUA.cmake)
+blt_import_library(
+    NAME          lua
+    INCLUDES      ${LUA_INCLUDE_DIR}
+    LIBRARIES     ${LUA_LIBRARY}
+    TREAT_INCLUDES_AS_SYSTEM ON)
 
 #------------------------------------------------------------------------------
 # Tribol
