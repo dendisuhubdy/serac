@@ -103,6 +103,13 @@ if (ENABLE_GTEST)
         blt_add_benchmark(  NAME        benchmark_expr_templates
                             COMMAND     benchmark_expr_templates "--benchmark_min_time=0.0 --v=3 --benchmark_format=console"
                             NUM_MPI_TASKS 4)
+
+        blt_add_executable( NAME        benchmark_lua_functions
+                            SOURCES     benchmark_lua_functions.cpp
+                            DEPENDS_ON  gbenchmark ${test_dependencies}
+                            FOLDER      serac/tests)
+        blt_add_benchmark(  NAME        benchmark_lua_functions
+                            COMMAND     benchmark_lua_functions "--benchmark_min_time=0.0 --v=3 --benchmark_format=console")
     endif()
 
     if(SERAC_USE_PETSC)
