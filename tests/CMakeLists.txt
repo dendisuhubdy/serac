@@ -95,7 +95,7 @@ if (ENABLE_GTEST)
                       COMMAND       serac_cuda_smoketest )
     endif()
 
-    if(ENABLE_BENCHMARKS)
+    if(ENABLE_BENCHMARKS OR ENABLE_GBENCHMARK)
         blt_add_executable( NAME        benchmark_expr_templates
                             SOURCES     benchmark_expr_templates.cpp
                             DEPENDS_ON  gbenchmark ${test_dependencies}
