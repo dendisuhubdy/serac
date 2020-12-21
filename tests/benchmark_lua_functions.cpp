@@ -68,27 +68,12 @@ BENCHMARK(BM_LuaScalarFunction);
 
 static void BM_LuaJITScalarFunction(benchmark::State& state)
 {
-#define luaJIT_BC_scalar_coef_SIZE 86
-  static const char luaJIT_BC_scalar_coef[] = {
-      27,  76,  74,  2, 2,  20, 0,  3,  4,   0,   0,   1,   3,   24,  3,   0,   1,   32,  3,   2,   3,  76,
-      3,   2,   0,   4, 58, 3,  0,  2,  0,   4,   0,   5,   53,  0,   1,   0,   51,  1,   0,   0,   61, 1,
-      2,   0,   55,  0, 3,  0,  75, 0,  1,   0,   14,  99,  111, 101, 102, 95,  105, 110, 102, 111, 9,  99,
-      111, 101, 102, 1, 0,  1,  14, 99, 111, 109, 112, 111, 110, 101, 110, 116, 3,   1,   0,   0};
   // Inlet setup
   axom::sidre::DataStore datastore;
   auto                   reader    = std::make_unique<axom::inlet::LuaReader>();
   auto&                  sol_state = reader->solState();
   sol_state.open_libraries(sol::lib::jit, sol::lib::package, sol::lib::base);
   SLIC_ERROR_IF(sol_state["jit"].get_type() != sol::type::table, "Lua implementation is not LuaJIT!");
-  // This does not work through sol so we need to get at the luaState directly
-  // sol_state["package"]["preload"]["scalar_coef"] = sol_state.load_buffer(luaJIT_BC_scalar_coef,
-  // luaJIT_BC_scalar_coef_SIZE);
-  auto lua_state = sol_state.lua_state();
-  lua_getglobal(lua_state, "package");
-  lua_getfield(lua_state, -1, "preload");
-  bool error = luaL_loadbuffer(lua_state, luaJIT_BC_scalar_coef, luaJIT_BC_scalar_coef_SIZE, NULL);
-  SLIC_ERROR_IF(error, "Failed to load LuaJIT bytecode");
-  lua_setfield(lua_state, -2, "scalar_coef");
 
   reader->parseString("require('scalar_coef');");
   axom::inlet::Inlet inlet(std::move(reader), datastore.getRoot());
@@ -154,27 +139,12 @@ BENCHMARK(BM_LuaVectorFunction);
 
 static void BM_LuaJITVectorFunction(benchmark::State& state)
 {
-#define luaJIT_BC_vec_coef_SIZE 82
-  static const char luaJIT_BC_vec_coef[] = {
-      27, 76,  74,  2,   2,   24, 0,   3,   6,  0,  0,  1,   4,   24,  3, 0, 1,  18, 4,   2,   0,
-      18, 5,   0,   0,   74,  3,  4,   0,   4,  50, 3,  0,   2,   0,   4, 0, 5,  53, 0,   1,   0,
-      51, 1,   0,   0,   61,  1,  2,   0,   55, 0,  3,  0,   75,  0,   1, 0, 14, 99, 111, 101, 102,
-      95, 105, 110, 102, 111, 13, 118, 101, 99, 95, 99, 111, 101, 102, 1, 0, 0,  0,  0};
   // Inlet setup
   axom::sidre::DataStore datastore;
   auto                   reader    = std::make_unique<axom::inlet::LuaReader>();
   auto&                  sol_state = reader->solState();
   sol_state.open_libraries(sol::lib::jit, sol::lib::package, sol::lib::base);
   SLIC_ERROR_IF(sol_state["jit"].get_type() != sol::type::table, "Lua implementation is not LuaJIT!");
-  // This does not work through sol so we need to get at the luaState directly
-  // sol_state["package"]["preload"]["scalar_coef"] = sol_state.load_buffer(luaJIT_BC_vec_coef,
-  // luaJIT_BC_vec_coef_SIZE);
-  auto lua_state = sol_state.lua_state();
-  lua_getglobal(lua_state, "package");
-  lua_getfield(lua_state, -1, "preload");
-  bool error = luaL_loadbuffer(lua_state, luaJIT_BC_vec_coef, luaJIT_BC_vec_coef_SIZE, NULL);
-  SLIC_ERROR_IF(error, "Failed to load LuaJIT bytecode");
-  lua_setfield(lua_state, -2, "vec_coef");
 
   reader->parseString("require('vec_coef');");
   axom::inlet::Inlet inlet(std::move(reader), datastore.getRoot());

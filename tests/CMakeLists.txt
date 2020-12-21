@@ -104,8 +104,25 @@ if (ENABLE_GTEST)
                             COMMAND     benchmark_expr_templates "--benchmark_min_time=0.0 --v=3 --benchmark_format=console"
                             NUM_MPI_TASKS 4)
 
+        set(extra_lua_benchmark_depends)
+        find_program(LUAJIT_EXEC luajit)
+        if(LUAJIT_EXEC)
+            set(_coef_obj scalar_coef_jit${CMAKE_CXX_OUTPUT_EXTENSION})
+            set(_vec_coef_obj vec_coef_jit${CMAKE_CXX_OUTPUT_EXTENSION})
+            message(STATUS "The thing is ${_coef_obj}")
+            set(extra_lua_benchmark_depends ${_coef_obj} ${_vec_coef_obj})
+            set(_coef_src "${CMAKE_CURRENT_SOURCE_DIR}/../data/input_files/tests/benchmarks/scalar_coef.lua")
+            set(_vec_coef_src "${CMAKE_CURRENT_SOURCE_DIR}/../data/input_files/tests/benchmarks/vec_coef.lua")
+            add_custom_command(OUTPUT ${_coef_obj}
+                               COMMAND ${LUAJIT_EXEC} -b ${_coef_src} ${_coef_obj}
+                               DEPENDS ${_coef_src})
+            add_custom_command(OUTPUT ${_vec_coef_obj}
+                               COMMAND ${LUAJIT_EXEC} -b ${_vec_coef_src} ${_vec_coef_obj}
+                               DEPENDS ${_vec_coef_src})
+        endif()
+    
         blt_add_executable( NAME        benchmark_lua_functions
-                            SOURCES     benchmark_lua_functions.cpp
+                            SOURCES     benchmark_lua_functions.cpp ${extra_lua_benchmark_depends}
                             DEPENDS_ON  gbenchmark ${test_dependencies}
                             FOLDER      serac/tests)
         blt_add_benchmark(  NAME        benchmark_lua_functions
