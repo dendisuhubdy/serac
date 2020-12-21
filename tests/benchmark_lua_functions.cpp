@@ -28,9 +28,26 @@ mfem::Vector sample_vector()
 
 static void BM_DirectScalarFunction(benchmark::State& state)
 {
-  const CoefficientInputInfo::ScalarFunc func  = [](const mfem::Vector& vec) { return vec(1) * 2 + vec(2); };
-  const auto                             input = sample_vector();
-  double                                 result;
+  const CoefficientInputInfo::ScalarFunc func = [](const mfem::Vector& vec) {
+    auto x  = vec(0);
+    auto y  = vec(1);
+    auto z  = vec(2);
+    auto x2 = x;
+    auto y2 = y;
+    auto z2 = z;
+    for (int i = 0; i < 100; i++) {
+      x2 += i;
+      y2 += i * 2;
+      z2 += i * 3;
+    }
+
+    auto comp0 = (y * z2) - (z * y2);
+    auto comp1 = (x * z2) - (z * x2);
+    auto comp2 = (x * y2) - (y * z2);
+    return comp0 + comp1 + comp2;
+  };
+  const auto input = sample_vector();
+  double     result;
   for (auto _ : state) {
     // This code gets timed
     result = func(input);
@@ -45,7 +62,25 @@ static void BM_LuaScalarFunction(benchmark::State& state)
   // Inlet setup
   axom::sidre::DataStore datastore;
   auto                   reader = std::make_unique<axom::inlet::LuaReader>();
-  reader->parseString("coef_info = { coef = function(x, y, z) return y * 2 + z end, component = 1 }");
+  reader->parseString(
+      "coef_info = {\n"
+      "  coef = function(x, y, z)\n"
+      "    local x2 = x\n"
+      "    local y2 = y\n"
+      "    local z2 = z\n"
+      "    for i = 1, 100 do\n"
+      "      x2 = x2 + i\n"
+      "      y2 = y2 + (2 * i)\n"
+      "      z2 = z2 + (3 * i)\n"
+      "    end\n"
+      "    -- cross product\n"
+      "    local comp0 = (y * z2) - (z * y2)\n"
+      "    local comp1 = (x * z2) - (z * x2)\n"
+      "    local comp2 = (x * y2) - (y * z2)\n"
+      "    return comp0 + comp1 + comp2\n"
+      "  end,\n"
+      "  component = 1,"
+      "}\n");
   axom::inlet::Inlet inlet(std::move(reader), datastore.getRoot());
   auto&              coef_table = inlet.addTable("coef_info");
   CoefficientInputInfo::defineInputFileSchema(coef_table);
@@ -99,9 +134,21 @@ BENCHMARK(BM_LuaJITScalarFunction);
 static void BM_DirectVectorFunction(benchmark::State& state)
 {
   const CoefficientInputInfo::VecFunc func = [](const mfem::Vector& in, mfem::Vector& out) {
-    out(0) = in(1) * 2;
-    out(1) = in(2);
-    out(2) = in(0);
+    auto x  = in(0);
+    auto y  = in(1);
+    auto z  = in(2);
+    auto x2 = x;
+    auto y2 = y;
+    auto z2 = z;
+    for (int i = 0; i < 100; i++) {
+      x2 += i;
+      y2 += i * 2;
+      z2 += i * 3;
+    }
+
+    out(0) = (y * z2) - (z * y2);
+    out(1) = (x * z2) - (z * x2);
+    out(2) = (x * y2) - (y * z2);
   };
   const auto   input = sample_vector();
   mfem::Vector result(3);
@@ -118,7 +165,24 @@ static void BM_LuaVectorFunction(benchmark::State& state)
   // Inlet setup
   axom::sidre::DataStore datastore;
   auto                   reader = std::make_unique<axom::inlet::LuaReader>();
-  reader->parseString("coef_info = { vec_coef = function(x, y, z) return y * 2, z, x end }");
+  reader->parseString(
+      "coef_info = {\n"
+      "  vec_coef = function(x, y, z)\n"
+      "    local x2 = x\n"
+      "    local y2 = y\n"
+      "    local z2 = z\n"
+      "    for i = 1, 100 do\n"
+      "      x2 = x2 + i\n"
+      "      y2 = y2 + (2 * i)\n"
+      "      z2 = z2 + (3 * i)\n"
+      "    end\n"
+      "    -- cross product\n"
+      "    local comp0 = (y * z2) - (z * y2)\n"
+      "    local comp1 = (x * z2) - (z * x2)\n"
+      "    local comp2 = (x * y2) - (y * z2)\n"
+      "    return comp0, comp1, comp2\n"
+      "  end\n"
+      "}\n");
   axom::inlet::Inlet inlet(std::move(reader), datastore.getRoot());
   auto&              coef_table = inlet.addTable("coef_info");
   CoefficientInputInfo::defineInputFileSchema(coef_table);
