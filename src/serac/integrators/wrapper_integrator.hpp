@@ -13,10 +13,24 @@
 #ifndef WRAPPER_INTEGRATOR_HPP
 #define WRAPPER_INTEGRATOR_HPP
 
+#include <mfem/fem/nonlininteg.hpp>
+#include <mfem/linalg/densemat.hpp>
+#include <mfem/linalg/vector.hpp>
 #include <functional>
 #include <memory>
 
 #include "mfem.hpp"
+#include "bits/shared_ptr.h"
+#include "bits/std_function.h"
+#include "new"
+
+namespace mfem {
+class BilinearFormIntegrator;
+class ElementTransformation;
+class FiniteElement;
+class LinearFormIntegrator;
+class ParFiniteElementSpace;
+}  // namespace mfem
 
 namespace serac {
 

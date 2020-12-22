@@ -4,8 +4,12 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/integrators/inc_hyperelastic_integrator.hpp"
+#include <mfem/fem/eltrans.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/intrules.hpp>
+#include <mfem/linalg/vector.hpp>
 
+#include "serac/integrators/inc_hyperelastic_integrator.hpp"
 #include "serac/infrastructure/profiling.hpp"
 
 namespace serac {

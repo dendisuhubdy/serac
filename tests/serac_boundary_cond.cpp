@@ -4,12 +4,24 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/mesh/element.hpp>
+#include <mfem/mesh/mesh.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <functional>
+#include <utility>
+#include <vector>
 
-#include <memory>
-
-#include "mfem.hpp"
 #include "serac/physics/utilities/boundary_condition_manager.hpp"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "serac/physics/utilities/finite_element_state.hpp"
 
 namespace serac {
 
@@ -90,6 +102,7 @@ TEST(boundary_cond, filter_generics)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

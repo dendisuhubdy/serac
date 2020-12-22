@@ -4,15 +4,19 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/infrastructure/terminator.hpp"
-
+#include <mpi.h>
+#include <string.h>
+#include <axom/slic/interface/slic.hpp>
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
 
+#include "serac/infrastructure/terminator.hpp"
 #include "serac/infrastructure/accelerator.hpp"
 #include "serac/infrastructure/logger.hpp"
 #include "serac/infrastructure/profiling.hpp"
+#include "iosfwd"
+#include "ostream"
 
 namespace {
 /**

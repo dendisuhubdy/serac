@@ -4,9 +4,16 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/operators/odes.hpp"
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/linalg/solvers.hpp>
+#include <utility>
+#include <vector>
 
+#include "serac/physics/operators/odes.hpp"
 #include "serac/numerics/expr_template_ops.hpp"
+#include "serac/numerics/expr_template_internal.hpp"
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "serac/physics/utilities/equation_solver.hpp"
 
 namespace serac {
 SecondOrderODE::SecondOrderODE(int n, State&& state, const EquationSolver& solver, const BoundaryConditionManager& bcs)

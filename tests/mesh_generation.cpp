@@ -4,9 +4,15 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <mfem/mesh/pmesh.hpp>
+#include <memory>
 
 #include "serac/numerics/mesh_utils.hpp"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
 
 TEST(meshgen, successful_creation)
 {
@@ -20,6 +26,7 @@ TEST(meshgen, successful_creation)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

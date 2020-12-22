@@ -4,12 +4,14 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
-
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mfem/general/array.hpp>
 #include <algorithm>
 #include <numeric>
 
-#include "mfem.hpp"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
 
 // In these tests std::algorithms should only be used once -
 // naive for-loops should be used everywhere else in a given

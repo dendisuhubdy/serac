@@ -4,6 +4,14 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/eltrans.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/fe_coll.hpp>
+#include <mfem/fem/lininteg.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <memory>
+
 #include "serac/integrators/wrapper_integrator.hpp"
 
 namespace serac {

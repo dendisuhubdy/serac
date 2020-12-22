@@ -6,13 +6,20 @@
 
 #pragma once
 
+#include <mfem/linalg/ode.hpp>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/linalg/vector.hpp>
 #include <functional>
+#include <memory>
 
 #include "mfem.hpp"
 #include "serac/physics/utilities/boundary_condition_manager.hpp"
 #include "serac/physics/utilities/equation_solver.hpp"
+#include "new"
+#include "serac/physics/utilities/solver_config.hpp"
 
 namespace serac {
+class EquationSolver;
 
 /**
  * @brief SecondOrderODE is a class wrapping mfem::SecondOrderTimeDependentOperator

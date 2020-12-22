@@ -4,14 +4,22 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/base_physics.hpp"
-
+#include <fmt/core.h>
+#include <axom/sidre/core/MFEMSidreDataCollection.hpp>
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <mfem/mesh/vtk.hpp>
 #include <fstream>
+#include <algorithm>
+#include <utility>
 
-#include "fmt/fmt.hpp"
+#include "serac/physics/base_physics.hpp"
 #include "serac/infrastructure/initialize.hpp"
 #include "serac/infrastructure/logger.hpp"
-#include "serac/infrastructure/terminator.hpp"
+#include "iosfwd"
+#include "tuple"
 
 namespace serac {
 

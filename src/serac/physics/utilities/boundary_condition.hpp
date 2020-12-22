@@ -13,15 +13,27 @@
 #ifndef BOUNDARY_CONDITION
 #define BOUNDARY_CONDITION
 
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/linalg/hypre.hpp>
 #include <memory>
 #include <optional>
 #include <set>
 #include <type_traits>
 #include <typeinfo>
 #include <utility>
+#include <iosfwd>
 
 #include "serac/infrastructure/logger.hpp"
 #include "serac/physics/utilities/finite_element_state.hpp"
+#include "new"
+
+namespace mfem {
+class Coefficient;
+class ParGridFunction;
+class Vector;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

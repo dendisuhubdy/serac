@@ -4,13 +4,37 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/infrastructure/input.hpp"
-
 #include <stdlib.h>
+#include <fmt/core.h>
+#include <limits.h>
+#include <mpi.h>
+#include <axom/core/utilities/FileUtilities.hpp>
+#include <axom/core/utilities/Utilities.hpp>
+#include <axom/inlet/Function.hpp>
+#include <axom/inlet/LuaReader.hpp>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/inlet/Reader.hpp>
+#include <axom/inlet/Table.hpp>
+#include <axom/inlet/Verifiable.hpp>
+#include <axom/inlet/VerifiableScalar.hpp>
+#include <axom/primal/geometry/Vector.hpp>
+#include <axom/sidre/core/DataStore.hpp>
+#include <axom/sidre/core/Group.hpp>
+#include <axom/slic/interface/slic_macros.hpp>
+#include <algorithm>
+#include <memory>
+#include <unordered_map>
+#include <utility>
 
-#include "axom/core.hpp"
+#include "serac/infrastructure/input.hpp"
 #include "serac/infrastructure/logger.hpp"
-#include "serac/infrastructure/terminator.hpp"
+#include "iosfwd"
+#include "iostream"
+#include "new"
+#include "ostream"
+#include "type_traits"
+#include "utility"
+#include "variant"
 
 namespace serac {
 

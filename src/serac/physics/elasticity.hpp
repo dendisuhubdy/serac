@@ -13,8 +13,25 @@
 #ifndef LINEAR_ELASTICITY
 #define LINEAR_ELASTICITY
 
+#include <memory>
+#include <set>
+
 #include "mfem.hpp"
 #include "serac/physics/base_physics.hpp"
+#include "bits/shared_ptr.h"
+#include "serac/physics/utilities/equation_solver.hpp"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
+
+namespace mfem {
+class Coefficient;
+class HypreParMatrix;
+class HypreParVector;
+class ParBilinearForm;
+class ParLinearForm;
+class ParMesh;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

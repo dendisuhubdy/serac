@@ -4,9 +4,24 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
+#include <HYPRE_utilities.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <mfem/linalg/densemat.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <memory>
+#include <utility>
 
 #include "serac/numerics/expr_template_ops.hpp"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "serac/numerics/expr_template_internal.hpp"
+#include "serac/numerics/vector_expression.hpp"
+#include "type_traits"
+#include "utility"
 
 static std::pair<mfem::Vector, mfem::Vector> sample_vectors(const int entries)
 {
@@ -448,6 +463,7 @@ TEST(expr_templates, complex_expr_lambda)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

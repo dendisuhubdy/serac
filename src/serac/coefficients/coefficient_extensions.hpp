@@ -13,11 +13,24 @@
 #ifndef COEFFICIENT_EXTENSIONS_HPP
 #define COEFFICIENT_EXTENSIONS_HPP
 
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/general/array.hpp>
 #include <functional>
 #include <memory>
 
 #include "mfem.hpp"
 #include "serac/numerics/expr_template_ops.hpp"
+#include "bits/shared_ptr.h"
+#include "bits/std_function.h"
+#include "new"
+
+namespace mfem {
+class ElementTransformation;
+class IntegrationPoint;
+class Mesh;
+class ParFiniteElementSpace;
+class Vector;
+}  // namespace mfem
 
 namespace serac {
 

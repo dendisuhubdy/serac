@@ -13,13 +13,42 @@
 #ifndef NONLIN_SOLID
 #define NONLIN_SOLID
 
+#include <mfem/linalg/vector.hpp>
 #include <optional>
+#include <memory>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <utility>
 
 #include "mfem.hpp"
 #include "serac/infrastructure/input.hpp"
 #include "serac/physics/base_physics.hpp"
 #include "serac/physics/operators/odes.hpp"
 #include "serac/physics/operators/stdfunction_operator.hpp"
+#include "bits/shared_ptr.h"
+#include "serac/physics/utilities/equation_solver.hpp"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
+
+namespace axom {
+namespace inlet {
+class Table;
+}  // namespace inlet
+}  // namespace axom
+namespace mfem {
+class Coefficient;
+class HyperelasticModel;
+class HypreParMatrix;
+class Operator;
+class ParBilinearForm;
+class ParGridFunction;
+class ParMesh;
+class ParNonlinearForm;
+class TimeDependentOperator;
+class VectorCoefficient;
+}  // namespace mfem
+template <typename T> struct FromInlet;
 
 namespace serac {
 

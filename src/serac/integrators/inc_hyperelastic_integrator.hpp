@@ -10,7 +10,16 @@
  * @brief The MFEM integrators for the incremental hyperelastic formulation
  */
 
+#include <mfem/fem/nonlininteg.hpp>
+#include <mfem/linalg/densemat.hpp>
+
 #include "mfem.hpp"
+
+namespace mfem {
+class ElementTransformation;
+class FiniteElement;
+class Vector;
+}  // namespace mfem
 
 namespace serac {
 

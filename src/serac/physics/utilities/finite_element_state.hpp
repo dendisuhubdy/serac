@@ -13,13 +13,29 @@
 #ifndef FINITE_ELEMENT_STATE
 #define FINITE_ELEMENT_STATE
 
+#include <mpi.h>
+#include <mfem/fem/fe_coll.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/linalg/hypre.hpp>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <type_traits>
 #include <variant>
+#include <string>
 
 #include "mfem.hpp"
+#include "bits/refwrap.h"
+#include "bits/shared_ptr.h"
+#include "new"
+
+namespace mfem {
+class Coefficient;
+class ParMesh;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

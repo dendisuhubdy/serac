@@ -15,6 +15,10 @@
 
 #include "mfem.hpp"
 
+namespace mfem {
+class Vector;
+}  // namespace mfem
+
 namespace serac {
 
 /**

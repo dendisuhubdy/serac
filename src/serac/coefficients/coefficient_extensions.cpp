@@ -5,9 +5,24 @@
 // SPDX-License-Identifier: (BSD-3-Clause)
 // # Author: Jonathan Wong @ LLNL.
 
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/eltrans.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/fe_coll.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/gridfunc.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/mesh.hpp>
+#include <algorithm>
+#include <memory>
+
 #include "serac/coefficients/coefficient_extensions.hpp"
 
-#include "serac/infrastructure/logger.hpp"
+namespace mfem {
+class IntegrationPoint;
+}  // namespace mfem
 
 namespace serac {
 

@@ -4,10 +4,19 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/thermal_solid.hpp"
+#include <algorithm>
+#include <iterator>
+#include <vector>
 
+#include "serac/physics/thermal_solid.hpp"
 #include "serac/infrastructure/logger.hpp"
 #include "serac/physics/utilities/solver_config.hpp"
+#include "bits/refwrap.h"
+#include "stdlib.h"
+
+namespace mfem {
+class ParMesh;
+}  // namespace mfem
 
 namespace serac {
 

@@ -4,10 +4,28 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/infrastructure/logger.hpp"
+#include <fmt/core.h>
+#include <mpi.h>
+#include <axom/slic/core/MessageLevel.hpp>
+#include <axom/slic/interface/slic.hpp>
+#include <axom/slic/streams/GenericOutputStream.hpp>
+#include <axom/slic/streams/SynchronizedStream.hpp>
+#include <algorithm>
+#include <string>
 
+#include "serac/infrastructure/logger.hpp"
 #include "serac/infrastructure/initialize.hpp"
 #include "serac/infrastructure/terminator.hpp"
+#include "iosfwd"
+#include "iostream"
+#include "new"
+#include "ostream"
+
+namespace axom {
+namespace slic {
+class LogStream;
+}  // namespace slic
+}  // namespace axom
 
 namespace serac {
 

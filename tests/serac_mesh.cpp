@@ -4,14 +4,13 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
+#include <mpi.h>
+#include <string>
+#include <utility>
 
-#include <fstream>
-
-#include "mfem.hpp"
 #include "serac/numerics/mesh_utils.hpp"
-#include "serac/physics/elasticity.hpp"
 #include "serac/serac_config.hpp"
+#include "gtest/gtest_pred_impl.h"
 
 namespace serac {
 
@@ -28,6 +27,7 @@ TEST(mesh, load_exodus)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

@@ -4,17 +4,35 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
-
-#include <exception>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <axom/slic/interface/slic.hpp>
+#include <mfem/config/config.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <functional>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
 
 #include "serac/infrastructure/cli.hpp"
-#include "serac/infrastructure/initialize.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/physics/thermal_conduction.hpp"
 #include "serac/physics/utilities/boundary_condition.hpp"
 #include "serac/physics/utilities/equation_solver.hpp"
 #include "serac/serac_config.hpp"
+#include "bits/exception.h"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "optional"
+#include "serac/infrastructure/input.hpp"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
 
 class SlicErrorException : public std::exception {
 };
@@ -140,6 +158,7 @@ TEST(serac_error_handling, nonexistent_mesh_path)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

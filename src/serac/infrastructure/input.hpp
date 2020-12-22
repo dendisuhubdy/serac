@@ -14,12 +14,28 @@
 #ifndef SERAC_INPUT
 #define SERAC_INPUT
 
+#include <axom/inlet/Inlet.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/linalg/vector.hpp>
 #include <string>
 #include <variant>
+#include <functional>
+#include <set>
 
 #include "axom/inlet.hpp"
 #include "axom/sidre.hpp"
 #include "mfem.hpp"
+#include "bits/std_function.h"
+
+namespace axom {
+namespace inlet {
+class Table;
+}  // namespace inlet
+namespace sidre {
+class DataStore;
+}  // namespace sidre
+}  // namespace axom
+template <typename T> struct FromInlet;
 
 namespace serac {
 

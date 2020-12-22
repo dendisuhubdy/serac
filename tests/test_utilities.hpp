@@ -4,7 +4,15 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <string>
+
 #include "serac/infrastructure/input.hpp"
+
+namespace axom {
+namespace inlet {
+class Inlet;
+}  // namespace inlet
+}  // namespace axom
 
 namespace serac {
 

@@ -4,10 +4,30 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/elasticity.hpp"
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/lininteg.hpp>
+#include <mfem/fem/pbilinearform.hpp>
+#include <mfem/fem/plinearform.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "serac/physics/elasticity.hpp"
 #include "serac/infrastructure/logger.hpp"
-#include "serac/infrastructure/terminator.hpp"
+#include "bits/refwrap.h"
+#include "new"
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "serac/physics/utilities/boundary_condition_manager.hpp"
+
+namespace mfem {
+class Coefficient;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

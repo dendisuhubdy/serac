@@ -4,10 +4,31 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/utilities/equation_solver.hpp"
+#include <fmt/core.h>
+#include <kinsol/kinsol.h>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/inlet/Table.hpp>
+#include <axom/inlet/VerifiableScalar.hpp>
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/config/config.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/sundials.hpp>
+#include <mfem/linalg/superlu.hpp>
+#include <algorithm>
+#include <string>
+#include <utility>
 
-#include "serac/infrastructure/logger.hpp"
+#include "serac/physics/utilities/equation_solver.hpp"
 #include "serac/infrastructure/terminator.hpp"
+#include "optional"
+#include "type_traits"
+#include "variant"
+
+namespace mfem {
+class Vector;
+}  // namespace mfem
 
 namespace serac {
 

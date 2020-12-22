@@ -5,13 +5,42 @@
 // SPDX-License-Identifier: (BSD-3-Clause)
 // # Author: Jonathan Wong @ LLNL.
 
-#include <gtest/gtest.h>
-
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/fe_coll.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/lininteg.hpp>
+#include <mfem/fem/pbilinearform.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/fem/plinearform.hpp>
+#include <mfem/fem/pnonlinearform.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/general/error.hpp>
+#include <mfem/linalg/densemat.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/solvers.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/element.hpp>
+#include <mfem/mesh/mesh.hpp>
+#include <mfem/mesh/pmesh.hpp>
 #include <memory>
+#include <utility>
 
-#include "mfem.hpp"
 #include "serac/coefficients/coefficient_extensions.hpp"
 #include "serac/integrators/wrapper_integrator.hpp"
+#include "bits/shared_ptr.h"
+#include "bits/std_function.h"
+#include "gtest/gtest_pred_impl.h"
+#include "iosfwd"
+#include "iostream"
+#include "new"
+#include "ostream"
+#include "serac/infrastructure/logger.hpp"
 
 using namespace mfem;
 using namespace serac;
@@ -405,6 +434,11 @@ TEST_F(WrapperTests, vector_transform_coef)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
+namespace mfem {
+class ElementTransformation;
+}  // namespace mfem
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

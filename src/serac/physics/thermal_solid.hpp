@@ -13,12 +13,26 @@
 #ifndef THERMAL_SOLID
 #define THERMAL_SOLID
 
+#include <memory>
+#include <set>
+#include <utility>
+
 #include "mfem.hpp"
 #include "serac/physics/base_physics.hpp"
 #include "serac/physics/nonlinear_solid.hpp"
 #include "serac/physics/thermal_conduction.hpp"
+#include "bits/shared_ptr.h"
+#include "new"
+#include "serac/physics/utilities/solver_config.hpp"
+
+namespace mfem {
+class Coefficient;
+class ParMesh;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
+class FiniteElementState;
 
 /**
  * @brief The operator-split thermal structural solver

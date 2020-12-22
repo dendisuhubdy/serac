@@ -14,6 +14,8 @@
 #ifndef SERAC_LOGGER
 #define SERAC_LOGGER
 
+#include <axom/slic/interface/slic_macros.hpp>
+
 #include "axom/slic.hpp"
 #include "fmt/fmt.hpp"
 #include "mpi.h"

@@ -4,9 +4,16 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
 
-#include "mfem.hpp"
+
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mfem/general/array.hpp>
+#include <algorithm>
+#include <iosfwd>
+
+#include "gtest/gtest_pred_impl.h"
+#include "new"
 
 class ArrayCtr {
 private:

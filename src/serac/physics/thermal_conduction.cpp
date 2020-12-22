@@ -4,10 +4,25 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/thermal_conduction.hpp"
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/lininteg.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <algorithm>
+#include <iterator>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "serac/infrastructure/logger.hpp"
+#include "serac/physics/thermal_conduction.hpp"
 #include "serac/numerics/expr_template_ops.hpp"
+#include "bits/refwrap.h"
+#include "serac/numerics/expr_template_internal.hpp"
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "serac/physics/utilities/boundary_condition_manager.hpp"
 
 namespace serac {
 

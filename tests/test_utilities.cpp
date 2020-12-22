@@ -4,13 +4,29 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <axom/inlet/Inlet.hpp>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/sidre/core/DataStore.hpp>
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <algorithm>
+#include <memory>
+#include <utility>
+
 #include "test_utilities.hpp"
-
-#include <gtest/gtest.h>
-
 #include "serac/infrastructure/input.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/physics/nonlinear_solid.hpp"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
 
 namespace serac {
 

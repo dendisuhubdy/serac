@@ -4,15 +4,28 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
-#include <sys/stat.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <algorithm>
+#include <functional>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
 
-#include <fstream>
-
-#include "mfem.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/physics/thermal_conduction.hpp"
 #include "serac/serac_config.hpp"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "optional"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
 
 namespace serac {
 
@@ -390,6 +403,7 @@ TEST(thermal_solver, static_amgx_solve)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

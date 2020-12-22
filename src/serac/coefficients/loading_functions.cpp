@@ -4,6 +4,8 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <mfem/linalg/vector.hpp>
+
 #include "serac/coefficients/loading_functions.hpp"
 
 namespace serac {

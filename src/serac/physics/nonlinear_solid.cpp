@@ -4,13 +4,42 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/nonlinear_solid.hpp"
+#include <axom/inlet/Proxy.hpp>
+#include <axom/inlet/Table.hpp>
+#include <axom/inlet/VerifiableScalar.hpp>
+#include <axom/slic/interface/slic_macros.hpp>
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/nonlininteg.hpp>
+#include <mfem/fem/pbilinearform.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/fem/pnonlinearform.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/linalg/solvers.hpp>
+#include <mfem/linalg/sparsemat.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <algorithm>
+#include <exception>
+#include <functional>
+#include <iterator>
+#include <map>
+#include <vector>
 
-#include "serac/infrastructure/logger.hpp"
+#include "serac/physics/nonlinear_solid.hpp"
 #include "serac/integrators/hyperelastic_traction_integrator.hpp"
 #include "serac/integrators/inc_hyperelastic_integrator.hpp"
 #include "serac/numerics/expr_template_ops.hpp"
-#include "serac/numerics/mesh_utils.hpp"
+#include "bits/refwrap.h"
+#include "new"
+#include "optional"
+#include "serac/numerics/expr_template_internal.hpp"
+#include "serac/physics/operators/stdfunction_operator.hpp"
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "serac/physics/utilities/boundary_condition_manager.hpp"
+#include "type_traits"
+#include "utility"
 
 namespace serac {
 

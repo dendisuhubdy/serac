@@ -41,15 +41,59 @@
 //               well as the optional saving with ADIOS2 (adios2.readthedocs.io)
 //               are also illustrated.
 
-#include <gtest/gtest.h>
-
+#include <HYPRE_utilities.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <math.h>
+#include <mpi.h>
+#include <stddef.h>
+#include <mfem/fem/bilinearform.hpp>
+#include <mfem/fem/bilininteg.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/datacollection.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/fe_coll.hpp>
+#include <mfem/fem/fespace.hpp>
+#include <mfem/fem/gridfunc.hpp>
+#include <mfem/fem/lininteg.hpp>
+#include <mfem/fem/pbilinearform.hpp>
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/fem/plinearform.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/general/device.hpp>
+#include <mfem/general/error.hpp>
+#include <mfem/general/optparser.hpp>
+#include <mfem/general/socketstream.hpp>
+#include <mfem/linalg/handle.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/ode.hpp>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/linalg/solvers.hpp>
+#include <mfem/linalg/sparsemat.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/mesh.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <mfem/mesh/vtk.hpp>
 #include <array>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <string>
+#include <utility>
 
-#include "mfem.hpp"
 #include "serac/physics/utilities/equation_solver.hpp"
 #include "serac/serac_config.hpp"
+#include "bits/std_function.h"
+#include "gtest/gtest_pred_impl.h"
+#include "iomanip"
+#include "iosfwd"
+#include "math.h"
+#include "new"
+#include "optional"
+#include "ostream"
+#include "serac/physics/utilities/solver_config.hpp"
+#include "sstream"
 
 using namespace std;
 using namespace mfem;

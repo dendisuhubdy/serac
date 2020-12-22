@@ -13,11 +13,18 @@
 #ifndef BOUNDARY_CONDITION_MANAGER
 #define BOUNDARY_CONDITION_MANAGER
 
+#include <mfem/general/array.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/mesh/pmesh.hpp>
 #include <memory>
 #include <set>
+#include <functional>
+#include <iterator>
+#include <vector>
 
 #include "serac/physics/utilities/boundary_condition.hpp"
 #include "serac/physics/utilities/finite_element_state.hpp"
+#include "new"
 
 namespace serac {
 

@@ -4,16 +4,21 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
-#include <sys/stat.h>
-
-#include <fstream>
+#include <mpi.h>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/linalg/vector.hpp>
 #include <memory>
+#include <functional>
+#include <set>
+#include <string>
+#include <utility>
 
-#include "mfem.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/physics/thermal_conduction.hpp"
 #include "serac/serac_config.hpp"
+#include "bits/shared_ptr.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
 
 namespace serac {
 
@@ -55,6 +60,7 @@ TEST(serac_dtor, test1)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

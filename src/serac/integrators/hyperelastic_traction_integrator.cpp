@@ -4,6 +4,11 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/eltrans.hpp>
+#include <mfem/fem/fe.hpp>
+#include <mfem/fem/intrules.hpp>
+
 #include "serac/integrators/hyperelastic_traction_integrator.hpp"
 
 namespace serac {

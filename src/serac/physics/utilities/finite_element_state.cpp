@@ -4,7 +4,12 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <mfem/mesh/pmesh.hpp>
+#include <utility>
+
 #include "serac/physics/utilities/finite_element_state.hpp"
+#include "optional"
+#include "type_traits"
 
 namespace serac {
 

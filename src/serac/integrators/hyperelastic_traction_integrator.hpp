@@ -10,7 +10,17 @@
  * @brief Custom MFEM integrator for nonlinear finite deformation traction loads
  */
 
+#include <mfem/fem/nonlininteg.hpp>
+#include <mfem/linalg/densemat.hpp>
+#include <mfem/linalg/vector.hpp>
+
 #include "mfem.hpp"
+
+namespace mfem {
+class FaceElementTransformations;
+class FiniteElement;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

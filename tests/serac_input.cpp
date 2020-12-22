@@ -4,10 +4,26 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include <gtest/gtest.h>
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <axom/inlet/Inlet.hpp>
+#include <axom/inlet/LuaReader.hpp>
+#include <axom/inlet/Reader.hpp>
+#include <axom/inlet/Table.hpp>
+#include <axom/sidre/core/DataStore.hpp>
+#include <axom/slic/interface/slic.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <memory>
+#include <utility>
 
 #include "serac/infrastructure/input.hpp"
-#include "mfem.hpp"
+#include "bits/exception.h"
+#include "bits/std_function.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "optional"
+#include "variant"
 
 class SlicErrorException : public std::exception {
 };
@@ -144,6 +160,7 @@ TEST_F(InputTest, coef_build_scalar_from_vec)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])

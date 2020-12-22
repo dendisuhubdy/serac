@@ -13,10 +13,28 @@
 #ifndef THERMAL_CONDUCTION
 #define THERMAL_CONDUCTION
 
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/pbilinearform.hpp>
+#include <mfem/fem/plinearform.hpp>
+#include <mfem/linalg/hypre.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <memory>
+#include <set>
+
 #include "mfem.hpp"
 #include "serac/physics/base_physics.hpp"
 #include "serac/physics/operators/odes.hpp"
 #include "serac/physics/operators/stdfunction_operator.hpp"
+#include "bits/shared_ptr.h"
+#include "new"
+#include "optional"
+#include "serac/physics/utilities/equation_solver.hpp"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
+
+namespace mfem {
+class ParMesh;
+}  // namespace mfem
 
 namespace serac {
 

@@ -4,9 +4,21 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/physics/utilities/boundary_condition.hpp"
-
+#include <mfem/fem/pfespace.hpp>
+#include <mfem/fem/pgridfunc.hpp>
 #include <algorithm>
+
+#include "serac/physics/utilities/boundary_condition.hpp"
+#include "bits/shared_ptr.h"
+#include "optional"
+#include "utility"
+#include "variant"
+
+namespace mfem {
+class Coefficient;
+class Vector;
+class VectorCoefficient;
+}  // namespace mfem
 
 namespace serac {
 

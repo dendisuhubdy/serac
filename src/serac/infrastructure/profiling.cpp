@@ -6,8 +6,6 @@
 
 #include "serac/infrastructure/profiling.hpp"
 
-#include "serac/infrastructure/logger.hpp"
-
 #ifdef SERAC_USE_CALIPER
 #include <optional>
 

@@ -4,14 +4,24 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/numerics/mesh_utils.hpp"
-
+#include <fmt/core.h>
+#include <axom/core/utilities/FileUtilities.hpp>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/inlet/Table.hpp>
+#include <axom/inlet/VerifiableScalar.hpp>
+#include <mfem/general/zstr.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/element.hpp>
+#include <mfem/mesh/mesh.hpp>
+#include <mfem/mesh/pmesh.hpp>
 #include <fstream>
+#include <algorithm>
+#include <memory>
+#include <utility>
 
-#include "axom/core.hpp"
-#include "fmt/fmt.hpp"
+#include "serac/numerics/mesh_utils.hpp"
 #include "serac/infrastructure/logger.hpp"
-#include "serac/infrastructure/terminator.hpp"
+#include "new"
 
 namespace serac {
 

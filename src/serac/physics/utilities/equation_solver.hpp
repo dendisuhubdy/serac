@@ -13,6 +13,9 @@
 #ifndef EQUATION_SOLVER
 #define EQUATION_SOLVER
 
+#include <mpi.h>
+#include <mfem/linalg/operator.hpp>
+#include <mfem/linalg/solvers.hpp>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -20,6 +23,21 @@
 #include "mfem.hpp"
 #include "serac/infrastructure/input.hpp"
 #include "serac/physics/utilities/solver_config.hpp"
+#include "new"
+
+namespace axom {
+namespace inlet {
+class Table;
+}  // namespace inlet
+}  // namespace axom
+namespace mfem {
+class HypreParMatrix;
+class ParFiniteElementSpace;
+class SuperLURowLocMatrix;
+class SuperLUSolver;
+class Vector;
+}  // namespace mfem
+template <typename T> struct FromInlet;
 
 namespace serac {
 

@@ -14,10 +14,23 @@
 #ifndef MESH_UTILS
 #define MESH_UTILS
 
+#include <mpi.h>
 #include <memory>
+#include <string>
 
 #include "mfem.hpp"
 #include "serac/infrastructure/input.hpp"
+#include "bits/shared_ptr.h"
+
+namespace axom {
+namespace inlet {
+class Table;
+}  // namespace inlet
+}  // namespace axom
+namespace mfem {
+class ParMesh;
+}  // namespace mfem
+template <typename T> struct FromInlet;
 
 namespace serac {
 /**

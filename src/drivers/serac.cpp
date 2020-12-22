@@ -12,15 +12,20 @@
  * The purpose of this code is to act as a proxy app for nonlinear implicit mechanics codes at LLNL.
  */
 
+#include <axom/inlet/DocWriter.hpp>
+#include <axom/inlet/Inlet.hpp>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/inlet/SphinxDocWriter.hpp>
+#include <axom/inlet/VerifiableScalar.hpp>
+#include <axom/sidre/core/DataStore.hpp>
+#include <axom/sidre/core/Group.hpp>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <string>
+#include <algorithm>
+#include <unordered_map>
+#include <utility>
 
-#include "axom/core.hpp"
-#include "mfem.hpp"
-#include "serac/coefficients/loading_functions.hpp"
-#include "serac/coefficients/traction_coefficient.hpp"
 #include "serac/infrastructure/cli.hpp"
 #include "serac/infrastructure/initialize.hpp"
 #include "serac/infrastructure/input.hpp"
@@ -28,8 +33,10 @@
 #include "serac/infrastructure/terminator.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/physics/nonlinear_solid.hpp"
-#include "serac/physics/utilities/equation_solver.hpp"
-#include "serac/serac_config.hpp"
+#include "new"
+#include "ostream"
+#include "serac/physics/utilities/solver_config.hpp"
+#include "utility"
 
 namespace serac {
 

@@ -13,13 +13,27 @@
 #ifndef BASE_PHYSICS
 #define BASE_PHYSICS
 
+#include <mpi.h>
+#include <mfem/fem/datacollection.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/linalg/blockvector.hpp>
 #include <functional>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "mfem.hpp"
 #include "serac/physics/utilities/boundary_condition_manager.hpp"
 #include "serac/physics/utilities/equation_solver.hpp"
 #include "serac/physics/utilities/finite_element_state.hpp"
+#include "bits/refwrap.h"
+#include "bits/shared_ptr.h"
+#include "new"
+#include "serac/physics/utilities/solver_config.hpp"
+
+namespace mfem {
+class ParMesh;
+}  // namespace mfem
 
 namespace serac {
 

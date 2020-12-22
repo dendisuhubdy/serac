@@ -4,12 +4,17 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
-#include "serac/infrastructure/initialize.hpp"
+#include <mpi.h>
+#include <axom/slic/interface/slic_macros.hpp>
 
+#include "serac/infrastructure/initialize.hpp"
 #include "serac/infrastructure/accelerator.hpp"
 #include "serac/infrastructure/logger.hpp"
 #include "serac/infrastructure/profiling.hpp"
 #include "serac/infrastructure/terminator.hpp"
+#include "iosfwd"
+#include "iostream"
+#include "ostream"
 
 namespace serac {
 

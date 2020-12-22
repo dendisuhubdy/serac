@@ -4,18 +4,36 @@
 //
 // SPDX-License-Identifier: (BSD-3-Clause)
 
+#include <gtest/gtest-message.h>
+#include <gtest/gtest-test-part.h>
+#include <mpi.h>
+#include <axom/inlet/Inlet.hpp>
+#include <axom/inlet/Proxy.hpp>
+#include <axom/sidre/core/DataStore.hpp>
+#include <mfem/fem/coefficient.hpp>
+#include <mfem/fem/pgridfunc.hpp>
+#include <mfem/general/array.hpp>
+#include <mfem/linalg/vector.hpp>
+#include <mfem/mesh/pmesh.hpp>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+
 #include "serac/physics/nonlinear_solid.hpp"
-
-#include <fstream>
-#include <gtest/gtest.h>
-
-#include "mfem.hpp"
-
 #include "serac/coefficients/coefficient_extensions.hpp"
 #include "serac/infrastructure/input.hpp"
 #include "serac/numerics/mesh_utils.hpp"
 #include "serac/serac_config.hpp"
 #include "test_utilities.hpp"
+#include "bits/shared_ptr.h"
+#include "bits/std_function.h"
+#include "gtest/gtest_pred_impl.h"
+#include "new"
+#include "serac/physics/utilities/finite_element_state.hpp"
+#include "serac/physics/utilities/solver_config.hpp"
+#include "stdlib.h"
+#include "utility"
 
 namespace serac {
 
@@ -98,6 +116,7 @@ TEST(nonlinear_solid_solver, qs_component_solve)
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
+
 using axom::slic::UnitTestLogger;
 
 int main(int argc, char* argv[])
