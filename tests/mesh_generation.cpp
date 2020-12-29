@@ -8,15 +8,66 @@
 
 #include "serac/numerics/mesh_utils.hpp"
 
-TEST(meshgen, successful_creation)
+class MeshGenTest : public testing::TestWithParam<int> {
+};
+
+void checkRelativeError(const int expected, const int actual)
 {
+  const double error = std::abs(expected - actual) / static_cast<double>(expected);
+  // This is a pretty large margin, but the disk and ball creation functions can be
+  // somewhat far off
+  EXPECT_LT(error, 0.5);
+}
+
+TEST_P(MeshGenTest, disk_creation)
+{
+  const int expected = GetParam() * 100;
   // the disk and ball meshes don't exactly hit the number
   // of elements specified, they refine to get as close as possible
-  ASSERT_EQ(serac::buildDiskMesh(1000)->GetNE(), 1024);
-  ASSERT_EQ(serac::buildBallMesh(6000)->GetNE(), 4096);
-  ASSERT_EQ(serac::buildRectangleMesh(20, 20)->GetNE(), 400);
-  ASSERT_EQ(serac::buildCuboidMesh(20, 20, 20)->GetNE(), 8000);
+  checkRelativeError(expected, serac::buildDiskMesh(expected)->GetNE());
 }
+
+TEST_P(MeshGenTest, ball_creation)
+{
+  const int expected = GetParam() * 400;
+  // the disk and ball meshes don't exactly hit the number
+  // of elements specified, they refine to get as close as possible
+  checkRelativeError(expected, serac::buildBallMesh(expected)->GetNE());
+}
+
+TEST_P(MeshGenTest, rectangle_creation)
+{
+  int x_elts = GetParam();
+  int y_elts = GetParam();
+
+  int expected = x_elts * y_elts;
+  checkRelativeError(expected, serac::buildRectangleMesh(x_elts, y_elts)->GetNE());
+
+  // Try varying the elements for a non-square mesh
+  x_elts *= 0.7;
+  y_elts *= 1.19;
+  expected = x_elts * y_elts;
+  checkRelativeError(expected, serac::buildRectangleMesh(x_elts, y_elts)->GetNE());
+}
+
+TEST_P(MeshGenTest, cube_creation)
+{
+  int x_elts = GetParam();
+  int y_elts = GetParam();
+  int z_elts = GetParam();
+
+  int expected = x_elts * y_elts * z_elts;
+  checkRelativeError(expected, serac::buildCuboidMesh(x_elts, y_elts, z_elts)->GetNE());
+
+  // Try varying the elements for a non-cubde mesh
+  x_elts *= 0.7;
+  y_elts *= 1.19;
+  z_elts *= 2.46;
+  expected = x_elts * y_elts * z_elts;
+  checkRelativeError(expected, serac::buildCuboidMesh(x_elts, y_elts, z_elts)->GetNE());
+}
+
+INSTANTIATE_TEST_SUITE_P(BasicMeshGenTests, MeshGenTest, testing::Values(10, 20));
 
 //------------------------------------------------------------------------------
 #include "axom/slic/core/UnitTestLogger.hpp"
