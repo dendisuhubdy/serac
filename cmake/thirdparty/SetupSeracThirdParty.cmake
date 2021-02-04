@@ -186,7 +186,7 @@ if (NOT SERAC_THIRD_PARTY_LIBRARIES_FOUND)
     #------------------------------------------------------------------------------
     if(ASCENT_DIR)
         serac_assert_is_directory(VARIABLE_NAME ASCENT_DIR)
-        find_package(ascent REQUIRED NO_DEFAULT_PATH NAMES Ascent
+        find_package(Ascent REQUIRED NO_DEFAULT_PATH
                      PATHS ${ASCENT_DIR})
         message(STATUS "Ascent support is ON")
         set(ASCENT_FOUND TRUE)
