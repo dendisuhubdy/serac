@@ -146,20 +146,21 @@ void verifyFields(const ThermalConduction& module, const axom::inlet::Inlet& inl
 }  // namespace detail
 
 template <typename PhysicsModule>
-void runModuleTest(const std::string& input_file, std::shared_ptr<mfem::ParMesh> custom_mesh)
+void runModuleTest(const std::string& input_file, std::unique_ptr<mfem::ParMesh> custom_mesh)
 {
   // Create DataStore
   axom::sidre::DataStore datastore;
 
   // Initialize Inlet and read input file
   auto inlet = serac::input::initialize(datastore, input_file);
+  serac::StateManager::initialize(datastore);
 
   defineTestSchema<PhysicsModule>(inlet);
 
   // Build the mesh
-  std::shared_ptr<mfem::ParMesh> mesh;
+  std::unique_ptr<mfem::ParMesh> mesh;
   if (custom_mesh) {
-    mesh = custom_mesh;
+    mesh = std::move(custom_mesh);
   } else {
     auto mesh_options = inlet["main_mesh"].get<serac::mesh::InputOptions>();
     if (const auto file_options = std::get_if<serac::mesh::FileInputOptions>(&mesh_options.extra_options)) {
@@ -169,12 +170,14 @@ void runModuleTest(const std::string& input_file, std::shared_ptr<mfem::ParMesh>
       SLIC_ERROR("Physics module test is attempting to run without a file path or a custom mesh!");
     }
   }
+  const int dim = mesh->Dimension();
+  serac::StateManager::setMesh(std::move(mesh));
 
   const std::string module_name = detail::moduleName<PhysicsModule>();
 
   // Define the solid solver object
   auto          module_options = inlet[module_name].get<typename PhysicsModule::InputOptions>();
-  PhysicsModule module(mesh, module_options);
+  PhysicsModule module(module_options);
 
   const bool is_dynamic = inlet[module_name].contains("dynamics");
 
@@ -219,12 +222,13 @@ void runModuleTest(const std::string& input_file, std::shared_ptr<mfem::ParMesh>
   // Output the final state
   module.outputState();
 
-  detail::verifyFields(module, inlet, mesh->Dimension());
+  detail::verifyFields(module, inlet, dim);
+  serac::StateManager::reset();
 }
 
-template void runModuleTest<NonlinearSolid>(const std::string& input_file, std::shared_ptr<mfem::ParMesh> custom_mesh);
+template void runModuleTest<NonlinearSolid>(const std::string& input_file, std::unique_ptr<mfem::ParMesh> custom_mesh);
 template void runModuleTest<ThermalConduction>(const std::string&             input_file,
-                                               std::shared_ptr<mfem::ParMesh> custom_mesh);
+                                               std::unique_ptr<mfem::ParMesh> custom_mesh);
 
 }  // end namespace test_utils
 

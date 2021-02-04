@@ -71,10 +71,17 @@ int main(int argc, char* argv[])
   if (search != cli_opts.end()) {
     input_file_path = search->second;
   }
+  std::optional<int> restart_cycle;
+  if (auto cycle = cli_opts.find("restart_cycle"); cycle != cli_opts.end()) {
+    restart_cycle = std::stoi(cycle->second);
+  }
   bool create_input_file_docs = cli_opts.find("create_input_file_docs") != cli_opts.end();
 
   // Create DataStore
   axom::sidre::DataStore datastore;
+
+  // Intialize MFEMSidreDataCollection
+  serac::StateManager::initialize(datastore, restart_cycle);
 
   // Initialize Inlet and read input file
   auto inlet = serac::input::initialize(datastore, input_file_path);
@@ -89,17 +96,18 @@ int main(int argc, char* argv[])
   // Save input values to file
   datastore.getRoot()->save("serac_input.json", "json");
 
-  std::shared_ptr<mfem::ParMesh> mesh;
+  std::unique_ptr<mfem::ParMesh> mesh;
   // Build the mesh
   auto mesh_options = inlet["main_mesh"].get<serac::mesh::InputOptions>();
   if (const auto file_opts = std::get_if<serac::mesh::FileInputOptions>(&mesh_options.extra_options)) {
     auto full_mesh_path = serac::input::findMeshFilePath(file_opts->relative_mesh_file_name, input_file_path);
     mesh = serac::buildMeshFromFile(full_mesh_path, mesh_options.ser_ref_levels, mesh_options.par_ref_levels);
+    serac::StateManager::setMesh(std::move(mesh));
   }
 
   // Define the solid solver object
   auto                  solid_solver_options = inlet["nonlinear_solid"].get<serac::NonlinearSolid::InputOptions>();
-  serac::NonlinearSolid solid_solver(mesh, solid_solver_options);
+  serac::NonlinearSolid solid_solver(solid_solver_options);
 
   // FIXME: Move time-scaling logic to Lua once arbitrary function signatures are allowed
   // auto traction      = inlet["nonlinear_solid/traction"].get<mfem::Vector>();
@@ -115,7 +123,7 @@ int main(int argc, char* argv[])
 
   bool last_step = false;
 
-  solid_solver.initializeOutput(serac::OutputType::VisIt, "serac");
+  solid_solver.initializeOutput(serac::OutputType::SidreVisIt, "serac");
 
   // enter the time step loop. This was modeled after example 10p.
   for (int ti = 1; !last_step; ti++) {

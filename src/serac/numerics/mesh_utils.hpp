@@ -34,9 +34,9 @@ namespace serac {
  * @param[in] refine_serial The number of serial refinements
  * @param[in] refine_parallel The number of parallel refinements
  * @param[in] MPI_Comm The MPI communicator
- * @return A shared_ptr containing the constructed and refined parallel mesh object
+ * @return A unique_ptr containing the constructed and refined parallel mesh object
  */
-std::shared_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, const int refine_serial = 0,
+std::unique_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, const int refine_serial = 0,
                                                  const int refine_parallel = 0, const MPI_Comm comm = MPI_COMM_WORLD);
 
 /**
@@ -46,9 +46,9 @@ std::shared_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, c
  * number of elements is as close as possible to the user-specified number of elements
  *
  * @param[in] approx_number_of_elements
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, const MPI_Comm comm = MPI_COMM_WORLD);
+std::unique_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, const MPI_Comm comm = MPI_COMM_WORLD);
 
 /**
  * @brief Constructs a 3D MFEM mesh of a unit ball, centered at the origin
@@ -57,9 +57,9 @@ std::shared_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, cons
  * number of elements is as close as possible to the user-specified number of elements
  *
  * @param[in] approx_number_of_elements
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, const MPI_Comm comm = MPI_COMM_WORLD);
+std::unique_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, const MPI_Comm comm = MPI_COMM_WORLD);
 
 /**
  * @brief Constructs a 2D MFEM mesh of a rectangle
@@ -68,9 +68,9 @@ std::shared_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, cons
  * @param[in] elements_in_y the number of elements in the y-direction
  * @param[in] size_x Overall size in the x-direction
  * @param[in] size_y Overall size in the y-direction
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildRectangleMesh(int elements_in_x, int elements_in_y, double size_x = 1.,
+std::unique_ptr<mfem::ParMesh> buildRectangleMesh(int elements_in_x, int elements_in_y, double size_x = 1.,
                                                   double size_y = 1., const MPI_Comm comm = MPI_COMM_WORLD);
 
 /**
@@ -83,9 +83,9 @@ std::shared_ptr<mfem::ParMesh> buildRectangleMesh(int elements_in_x, int element
  * @param[in] size_y Overall size in the y-direction
  * @param[in] size_z Overall size in the z-direction
  * @param[in] MPI_Comm MPI Communicator
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildCuboidMesh(int elements_in_x, int elements_in_y, int elements_in_z,
+std::unique_ptr<mfem::ParMesh> buildCuboidMesh(int elements_in_x, int elements_in_y, int elements_in_z,
                                                double size_x = 1., double size_y = 1., double size_z = 1.,
                                                const MPI_Comm comm = MPI_COMM_WORLD);
 
@@ -136,9 +136,9 @@ struct InputOptions {
  *
  * @param[in] extra_options Cuboid Mesh Options
  * @param[in] MPI_Comm MPI Communicator
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildCuboidMesh(serac::mesh::GenerateInputOptions& options,
+std::unique_ptr<mfem::ParMesh> buildCuboidMesh(serac::mesh::GenerateInputOptions& options,
                                                const MPI_Comm                     comm = MPI_COMM_WORLD);
 
 /**
@@ -146,9 +146,9 @@ std::shared_ptr<mfem::ParMesh> buildCuboidMesh(serac::mesh::GenerateInputOptions
  *
  * @param[in] extra_options Rectangle Mesh Options
  * @param[in] MPI_Comm MPI Communicator
- * @return A shared_ptr containing the constructed mesh
+ * @return A unique_ptr containing the constructed mesh
  */
-std::shared_ptr<mfem::ParMesh> buildRectangleMesh(serac::mesh::GenerateInputOptions& options,
+std::unique_ptr<mfem::ParMesh> buildRectangleMesh(serac::mesh::GenerateInputOptions& options,
                                                   const MPI_Comm                     comm = MPI_COMM_WORLD);
 
 }  // namespace serac

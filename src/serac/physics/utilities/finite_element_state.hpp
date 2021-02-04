@@ -21,6 +21,8 @@
 
 #include "mfem.hpp"
 
+#include "axom/sidre/core/MFEMSidreDataCollection.hpp"
+
 namespace serac {
 
 /**
@@ -59,15 +61,15 @@ public:
   // with only the options they care about
   struct Options {
     /**
-     * The polynomial order that should be used for the problem
+     * @brief The polynomial order that should be used for the problem
      */
     int order = 1;
     /**
-     * The vector dimension for the FiniteElementSpace - defaults to the dimension of the mesh
+     * @brief The vector dimension for the FiniteElementSpace - defaults to the dimension of the mesh
      */
     std::optional<int> space_dim = {};
     /**
-     * The FECollection to use - defaults to an H1_FECollection
+     * @brief The FECollection to use - defaults to an H1_FECollection
      */
     std::unique_ptr<mfem::FiniteElementCollection> coll = {};
     /**
@@ -75,7 +77,7 @@ public:
      */
     mfem::Ordering::Type ordering = mfem::Ordering::byVDIM;
     /**
-     * The name of the field encapsulated by the state object
+     * @brief The name of the field encapsulated by the state object
      */
     std::string name = "";
   };
@@ -92,9 +94,17 @@ public:
                          .order = 1, .space_dim = {}, .coll = {}, .ordering = mfem::Ordering::byVDIM, .name = ""});
 
   /**
+   * @brief Minimal constructor for a FiniteElementState given an already-existing field
+   * @param[in] mesh The problem mesh (object does not take ownership)
+   * @param[in] gf The field for the state to create (object does not take ownership)
+   * @param[in] name The name of the field
+   */
+  FiniteElementState(mfem::ParMesh& mesh, mfem::ParGridFunction& gf, const std::string& name = "");
+
+  /**
    * Returns the MPI communicator for the state
    */
-  MPI_Comm comm() const { return space_.GetComm(); }
+  MPI_Comm comm() const { return retrieve(space_).GetComm(); }
 
   /**
    * Returns a non-owning reference to the internal grid function
@@ -106,14 +116,14 @@ public:
   /**
    * Returns a non-owning reference to the internal mesh object
    */
-  mfem::ParMesh& mesh() { return mesh_; }
+  mfem::ParMesh& mesh() { return *mesh_; }
 
   /**
    * Returns a non-owning reference to the internal FESpace
    */
-  mfem::ParFiniteElementSpace& space() { return space_; }
+  mfem::ParFiniteElementSpace& space() { return retrieve(space_); }
   /// \overload
-  const mfem::ParFiniteElementSpace& space() const { return space_; }
+  const mfem::ParFiniteElementSpace& space() const { return retrieve(space_); }
 
   /**
    * Returns a non-owning reference to the vector of true DOFs
@@ -162,17 +172,89 @@ public:
   {
     static_assert(std::is_constructible_v<Tensor, mfem::ParFiniteElementSpace*>,
                   "Tensor must be constructible with a ptr to ParFESpace");
-    return std::make_unique<Tensor>(&space_);
+    return std::make_unique<Tensor>(&retrieve(space_));
   }
 
 private:
+  /**
+   * @brief A helper type for uniform semantics over owning/non-owning pointers
+   */
+  template <typename T>
+  using MaybeOwner = std::variant<T*, std::unique_ptr<T>>;
+
+  /**
+   * @brief Retrieves a reference to the underlying object in a MaybeOwner
+   * @param[in] obj The object to dereference
+   */
+  template <typename T>
+  static T& retrieve(MaybeOwner<T>& obj)
+  {
+    return std::visit([](auto&& ptr) -> T& { return *ptr; }, obj);
+  }
+  /// @overload
+  template <typename T>
+  static const T& retrieve(const MaybeOwner<T>& obj)
+  {
+    return std::visit([](auto&& ptr) -> const T& { return *ptr; }, obj);
+  }
+
   // Allows for copy/move assignment
-  std::reference_wrapper<mfem::ParMesh>          mesh_;
-  std::unique_ptr<mfem::FiniteElementCollection> coll_;
-  mfem::ParFiniteElementSpace                    space_;
-  std::unique_ptr<mfem::ParGridFunction>         gf_;
-  mfem::HypreParVector                           true_vec_;
-  std::string                                    name_ = "";
+  mfem::ParMesh* mesh_;
+  // Must be const as FESpaces store a const reference to their FEColls
+  MaybeOwner<const mfem::FiniteElementCollection> coll_;
+  MaybeOwner<mfem::ParFiniteElementSpace>         space_;
+  mfem::ParGridFunction*                          gf_;
+  mfem::HypreParVector                            true_vec_;
+  std::string                                     name_ = "";
+};
+
+/**
+ * @brief Manages the lifetimes of FEState objects such that restarts are abstracted
+ * from physics modules
+ */
+class StateManager {
+public:
+  /**
+   * @brief Initializes the StateManager with a sidre DataStore (into which state will be written/read)
+   * @param[in] ds The DataStore to use
+   * @param[in] cycle_to_load The cycle to load - required for restarts
+   */
+  static void initialize(axom::sidre::DataStore& ds, const std::optional<int> cycle_to_load = {});
+
+  /**
+   * @brief Factory method for creating a new FEState object, signature is identical to FEState constructor
+   * @param[in] mesh The problem mesh
+   * @param[in] options Configuration options for the FEState, if a new state is created
+   * @see FiniteElementState::FiniteElementState
+   * @note If this is a restart then the options (except for the name) will be ignored
+   */
+  static FiniteElementState newState(mfem::ParMesh& mesh, FiniteElementState::Options&& options = {});
+
+  /**
+   * @brief Updates the Conduit Blueprint state in the datastore and saves to a file
+   * @param[in] t The current sim time
+   * @param[in] cycle The current iteration number of the simulation
+   */
+  static void step(const double t, const int cycle);
+
+  /**
+   * @brief Resets the underlying global datacollection object
+   */
+  static void reset() { datacoll_.reset(); };
+
+  static void setMesh(std::unique_ptr<mfem::ParMesh> mesh);
+
+  static mfem::ParMesh& mesh();
+
+private:
+  /**
+   * @brief The datacollection instance
+   */
+  static std::optional<axom::sidre::MFEMSidreDataCollection> datacoll_;
+  /**
+   * @brief Whether this simulation has been restarted from another simulation
+   */
+  static bool is_restart_;
 };
 
 }  // namespace serac

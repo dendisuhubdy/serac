@@ -16,7 +16,7 @@
 
 namespace serac {
 
-std::shared_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, const int refine_serial,
+std::unique_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, const int refine_serial,
                                                  const int refine_parallel, const MPI_Comm comm)
 {
   // Get the MPI rank for logging purposes
@@ -52,7 +52,7 @@ std::shared_ptr<mfem::ParMesh> buildMeshFromFile(const std::string& mesh_file, c
   }
 
   // create the parallel mesh
-  auto par_mesh = std::make_shared<mfem::ParMesh>(comm, *mesh);
+  auto par_mesh = std::make_unique<mfem::ParMesh>(comm, *mesh);
   for (int lev = 0; lev < refine_parallel; lev++) {
     par_mesh->UniformRefinement();
   }
@@ -85,7 +85,7 @@ void squish(mfem::Mesh& mesh)
   mesh.SetVertices(vertices);
 }
 
-std::shared_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, const MPI_Comm comm)
+std::unique_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, const MPI_Comm comm)
 {
   static constexpr int dim                   = 2;
   static constexpr int num_elems             = 4;
@@ -115,10 +115,10 @@ std::shared_ptr<mfem::ParMesh> buildDiskMesh(int approx_number_of_elements, cons
 
   squish(mesh);
 
-  return std::make_shared<mfem::ParMesh>(comm, mesh);
+  return std::make_unique<mfem::ParMesh>(comm, mesh);
 }
 
-std::shared_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, const MPI_Comm comm)
+std::unique_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, const MPI_Comm comm)
 {
   static constexpr int dim                   = 3;
   static constexpr int num_elems             = 8;
@@ -151,30 +151,30 @@ std::shared_ptr<mfem::ParMesh> buildBallMesh(int approx_number_of_elements, cons
 
   squish(mesh);
 
-  return std::make_shared<mfem::ParMesh>(comm, mesh);
+  return std::make_unique<mfem::ParMesh>(comm, mesh);
 }
 
-std::shared_ptr<mfem::ParMesh> buildRectangleMesh(int elements_in_x, int elements_in_y, double size_x, double size_y,
+std::unique_ptr<mfem::ParMesh> buildRectangleMesh(int elements_in_x, int elements_in_y, double size_x, double size_y,
                                                   const MPI_Comm comm)
 {
   mfem::Mesh mesh(elements_in_x, elements_in_y, mfem::Element::QUADRILATERAL, true, size_x, size_y);
-  return std::make_shared<mfem::ParMesh>(comm, mesh);
+  return std::make_unique<mfem::ParMesh>(comm, mesh);
 }
 
-std::shared_ptr<mfem::ParMesh> buildRectangleMesh(serac::mesh::GenerateInputOptions& options, const MPI_Comm comm)
+std::unique_ptr<mfem::ParMesh> buildRectangleMesh(serac::mesh::GenerateInputOptions& options, const MPI_Comm comm)
 {
   return buildRectangleMesh(options.elements[0], options.elements[1], options.overall_size[0], options.overall_size[1],
                             comm);
 }
 
-std::shared_ptr<mfem::ParMesh> buildCuboidMesh(int elements_in_x, int elements_in_y, int elements_in_z, double size_x,
+std::unique_ptr<mfem::ParMesh> buildCuboidMesh(int elements_in_x, int elements_in_y, int elements_in_z, double size_x,
                                                double size_y, double size_z, const MPI_Comm comm)
 {
   mfem::Mesh mesh(elements_in_x, elements_in_y, elements_in_z, mfem::Element::HEXAHEDRON, true, size_x, size_y, size_z);
-  return std::make_shared<mfem::ParMesh>(comm, mesh);
+  return std::make_unique<mfem::ParMesh>(comm, mesh);
 }
 
-std::shared_ptr<mfem::ParMesh> buildCuboidMesh(serac::mesh::GenerateInputOptions& options, const MPI_Comm comm)
+std::unique_ptr<mfem::ParMesh> buildCuboidMesh(serac::mesh::GenerateInputOptions& options, const MPI_Comm comm)
 {
   return buildCuboidMesh(options.elements[0], options.elements[1], options.elements[2], options.overall_size[0],
                          options.overall_size[1], options.overall_size[2], comm);
