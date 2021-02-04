@@ -182,6 +182,20 @@ if (NOT SERAC_THIRD_PARTY_LIBRARIES_FOUND)
     endif()
 
     #------------------------------------------------------------------------------
+    # Ascent
+    #------------------------------------------------------------------------------
+    if(ASCENT_DIR)
+        serac_assert_is_directory(VARIABLE_NAME ASCENT_DIR)
+        find_package(ascent REQUIRED NO_DEFAULT_PATH NAMES Ascent
+                     PATHS ${ASCENT_DIR})
+        message(STATUS "Ascent support is ON")
+        set(ASCENT_FOUND TRUE)
+    else()
+        message(STATUS "Ascent support is OFF")
+        set(ASCENT_FOUND FALSE)
+    endif()
+
+    #------------------------------------------------------------------------------
     # Remove exported OpenMP flags because they are not language agnostic
     #------------------------------------------------------------------------------
     set(_props)

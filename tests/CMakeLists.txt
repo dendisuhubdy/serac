@@ -118,4 +118,15 @@ if (ENABLE_GTEST)
                     NUM_MPI_TASKS 4 )
     endif()
 
+    if(SERAC_USE_ASCENT)
+        blt_add_executable( NAME        ascent_smoketest
+                            SOURCES     ascent_smoketest.cpp
+                            OUTPUT_DIR  ${TEST_OUTPUT_DIRECTORY}
+                            DEPENDS_ON  conduit::conduit ascent::ascent
+                            FOLDER      serac/tests )
+        blt_add_test(NAME         ascent_smoketest
+                    COMMAND       ascent_smoketest
+                    NUM_MPI_TASKS 1 )
+    endif()
+
 endif()
