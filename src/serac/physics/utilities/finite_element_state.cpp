@@ -6,6 +6,12 @@
 
 #include "serac/physics/utilities/finite_element_state.hpp"
 
+#include "serac/serac_config.hpp"
+
+#ifdef SERAC_USE_ASCENT
+#include "ascent.hpp"
+#endif
+
 namespace serac {
 
 FiniteElementState::FiniteElementState(mfem::ParMesh& mesh, FiniteElementState::Options&& options)
@@ -95,6 +101,40 @@ void StateManager::step(const double t, const int cycle)
   datacoll_->SetTime(t);
   datacoll_->SetCycle(cycle);
   datacoll_->Save();
+  // Create an image
+  conduit::Node blueprint_node;
+  datacoll_->GetBPGroup()->createNativeLayout(blueprint_node);
+  ascent::Ascent a;
+
+  // open ascent
+  conduit::Node ascent_options;
+  ascent_options["mpi_comm"] = MPI_Comm_c2f(datacoll_->GetComm());
+  a.open(ascent_options);
+
+  // publish mesh to ascent
+  a.publish(blueprint_node);
+
+  // setup actions
+  conduit::Node actions;
+  conduit::Node &add_act = actions.append();
+  add_act["action"] = "add_scenes";
+
+  // declare a scene (s1) with one plot (p1) 
+  // to render the dataset
+  conduit::Node &scenes = add_act["scenes"];
+  scenes["s1/plots/p1/type"] = "pseudocolor";
+  scenes["s1/plots/p1/field"] = "temperature";
+  // Set the output file name (ascent will add ".png")
+  scenes["s1/image_prefix"] = "serac_restart";
+
+  // print our full actions tree
+  std::cout << actions.to_yaml() << std::endl;
+
+  // execute the actions
+  a.execute(actions);
+
+  // close ascent
+  a.close();
 }
 
 void StateManager::setMesh(std::unique_ptr<mfem::ParMesh> mesh)

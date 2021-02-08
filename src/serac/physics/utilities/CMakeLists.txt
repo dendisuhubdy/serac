@@ -20,6 +20,7 @@ set(physics_utilities_sources
     )
 
 set(physics_utilities_depends serac_infrastructure)
+blt_list_append(TO physics_utilities_depends ELEMENTS ascent::ascent_mpi IF ${SERAC_USE_ASCENT})
 
 blt_add_library(
     NAME        serac_physics_utilities
