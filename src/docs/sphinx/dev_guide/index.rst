@@ -11,6 +11,7 @@ Developer Guide
    :maxdepth: 2
 
    style_guide
+   testing
    docker_dev_env
    modern_cpp
    logging
