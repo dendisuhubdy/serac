@@ -31,6 +31,7 @@
 #include "serac/physics/utilities/equation_solver.hpp"
 #include "serac/coefficients/coefficient_extensions.hpp"
 #include "serac/serac_config.hpp"
+#include "serac/numerics/vector_expression.hpp"
 
 namespace serac {
 
@@ -132,6 +133,30 @@ std::unique_ptr<serac::ThermalConduction> setupForwardSolver(axom::inlet::Inlet&
   return thermal_solver;
 }
 
+std::unique_ptr<mfem::ParLinearForm> fluxSensitivityForm(axom::inlet::Inlet& inlet, serac::FiniteElementState& temp,
+                                                         serac::FiniteElementState&         adjoint,
+                                                         serac::FiniteElementState&         designed_flux,
+                                                         std::shared_ptr<mfem::Coefficient> flux_sensitivity_coef)
+{
+  // Make the sensitivity coefficient
+  int unknown_boundary = inlet["unknown_boundary"];
+
+  // Using the known residual form, make a linear form for the sensitivities based on the current state, adjoint, and
+  // design fields
+  //
+  // NOTE: this grossness should be replaced by a weak form
+  flux_sensitivity_coef = std::make_shared<serac::mfem_ext::TransformedScalarCoefficient>(
+      adjoint.scalarCoef(), [](double adjoint_value) { return -1.0 * adjoint_value; });
+
+  auto             flux_sensitivity_form = std::make_unique<mfem::ParLinearForm>(&designed_flux.space());
+  mfem::Array<int> markers(temp.mesh().bdr_attributes.Max());
+  markers                       = 0;
+  markers[unknown_boundary - 1] = 1;
+  flux_sensitivity_form->AddBoundaryIntegrator(new mfem::BoundaryLFIntegrator(*flux_sensitivity_coef));
+
+  return flux_sensitivity_form;
+}
+
 }  // namespace serac
 
 namespace lido {
@@ -169,10 +194,10 @@ serac::mfem_ext::TransformedScalarCoefficient computeAdjointLoad(axom::inlet::In
   return misfit_coef;
 }
 
-std::unique_ptr<mfem::ParLinearForm> assembleSensitivityForm(axom::inlet::Inlet& inlet, serac::FiniteElementState& temp,
-                                                             serac::FiniteElementState&         adjoint,
-                                                             serac::FiniteElementState&         designed_flux,
-                                                             std::shared_ptr<mfem::Coefficient> sensitivity_coef)
+std::unique_ptr<mfem::ParLinearForm> qoiSensitivityForm(axom::inlet::Inlet& inlet, serac::FiniteElementState& temp,
+                                                        serac::FiniteElementState&,
+                                                        serac::FiniteElementState&         designed_flux,
+                                                        std::shared_ptr<mfem::Coefficient> qoi_sensitivity_coef)
 {
   // Make the sensitivity coefficient
   double epsilon          = inlet["epsilon"];
@@ -182,18 +207,17 @@ std::unique_ptr<mfem::ParLinearForm> assembleSensitivityForm(axom::inlet::Inlet&
   // fields
   //
   // NOTE: this grossness should be replaced by a weak form
-  sensitivity_coef = std::make_shared<serac::mfem_ext::TransformedScalarCoefficient>(
-      adjoint.scalarCoef(), designed_flux.scalarCoef(), [epsilon](double adjoint_value, double designed_flux_value) {
-        return 2.0 * epsilon * designed_flux_value - adjoint_value;
-      });
+  qoi_sensitivity_coef = std::make_shared<serac::mfem_ext::TransformedScalarCoefficient>(
+      designed_flux.scalarCoef(),
+      [epsilon](double designed_flux_value) { return 2.0 * epsilon * designed_flux_value; });
 
-  auto             sensitivity_form = std::make_unique<mfem::ParLinearForm>(&designed_flux.space());
+  auto             qoi_sensitivity_form = std::make_unique<mfem::ParLinearForm>(&designed_flux.space());
   mfem::Array<int> markers(temp.mesh().bdr_attributes.Max());
   markers                       = 0;
   markers[unknown_boundary - 1] = 1;
-  sensitivity_form->AddBoundaryIntegrator(new mfem::BoundaryLFIntegrator(*sensitivity_coef));
+  qoi_sensitivity_form->AddBoundaryIntegrator(new mfem::BoundaryLFIntegrator(*qoi_sensitivity_coef));
 
-  return sensitivity_form;
+  return qoi_sensitivity_form;
 }
 
 }  // namespace lido
@@ -239,13 +263,21 @@ int main(int argc, char* argv[])
 
   // Generate the form of the sensitivity
   // This should also get replaced by a weak form
-  std::shared_ptr<mfem::Coefficient> sensitivity_coef;
+  std::shared_ptr<mfem::Coefficient> flux_sensitivity_coef;
+  std::shared_ptr<mfem::Coefficient> qoi_sensitivity_coef;
 
-  auto sensitivity_form = lido::assembleSensitivityForm(inlet, thermal_solver->temperature(), thermal_solver->adjoint(),
-                                                        designed_flux, sensitivity_coef);
+  auto qoi_sensitivity_form = lido::qoiSensitivityForm(inlet, thermal_solver->temperature(), thermal_solver->adjoint(),
+                                                       designed_flux, qoi_sensitivity_coef);
+
+  auto flux_sensitivity_form = serac::fluxSensitivityForm(
+      inlet, thermal_solver->temperature(), thermal_solver->adjoint(), designed_flux, flux_sensitivity_coef);
 
   // Compute the discrete sensitivity
-  std::unique_ptr<mfem::HypreParVector> discrete_sensitivity_vector(sensitivity_form->ParallelAssemble());
+  mfem::HypreParVector discrete_sensitivity_vector(&designed_flux.space());
+  evaluate(*qoi_sensitivity_form->ParallelAssemble() + *flux_sensitivity_form->ParallelAssemble(),
+           discrete_sensitivity_vector);
+
+  discrete_sensitivity_vector.Print("output_sensitivity.txt");
 
   serac::exitGracefully();
 }
